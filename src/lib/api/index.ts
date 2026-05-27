@@ -58,6 +58,12 @@ export {
 
 export { apiGetMyEarnings } from './earnings'
 
+export {
+  apiGetNotifications,
+  apiMarkNotificationRead,
+  apiMarkAllNotificationsRead,
+} from './notifications'
+
 export type {
   Claim,
   ReviewerQueueItem,

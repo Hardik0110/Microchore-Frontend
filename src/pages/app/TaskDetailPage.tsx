@@ -213,11 +213,14 @@ export function TaskDetailPage() {
 
               <Card className="p-4 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-ink">Your Reply</p>
+                  <p className="text-sm font-medium text-ink">Type your reply</p>
                   <p className="text-[11px] text-ink-3 font-mono">
                     {text.length} chars · {wordCount} words
                   </p>
                 </div>
+                <p className="text-[11px] text-ink-3">
+                  Pasting is disabled. We track typing for quality, so write in your own voice.
+                </p>
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}

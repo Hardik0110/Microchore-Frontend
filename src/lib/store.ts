@@ -5,8 +5,11 @@ import {
   apiCreateProjectTask,
   apiCreateSubmission,
   apiGetMySubmissions,
+  apiGetNotifications,
   apiGetProjects,
   apiGetTasks,
+  apiMarkAllNotificationsRead,
+  apiMarkNotificationRead,
   apiReviewSubmission,
   apiUpdateProjectStatus,
 } from './api'
@@ -20,6 +23,7 @@ import type {
   EarningsSummary,
   Project,
   ProjectTaskInput,
+  Notification,
 } from '../types'
 
 export type {
@@ -32,6 +36,7 @@ export type {
   EarningsSummary,
   Project,
   ProjectTaskInput,
+  Notification,
 }
 
 let submissionCache: Submission[] = []
@@ -187,9 +192,12 @@ export function resetMockData() {
   taskCache = []
   submissionCache = []
   projectCache = []
+  notificationCache = []
+  notificationUnread = 0
   notifyTasks()
   notifySubmissions()
   notifyProjects()
+  notifyNotifications()
 }
 
 let projectCache: Project[] = []
@@ -267,4 +275,82 @@ export function useProjects() {
   )
 
   return { projects, addProject, addProjectTask, updateProjectStatus }
+}
+
+let notificationCache: Notification[] = []
+let notificationUnread = 0
+let notificationInflight: Promise<{ results: Notification[]; unreadCount: number }> | null = null
+const notificationListeners = new Set<() => void>()
+
+function notifyNotifications() {
+  for (const l of notificationListeners) l()
+}
+
+function fetchNotificationsOnce(): Promise<{ results: Notification[]; unreadCount: number }> {
+  if (notificationInflight) return notificationInflight
+  notificationInflight = apiGetNotifications().finally(() => {
+    notificationInflight = null
+  })
+  return notificationInflight
+}
+
+const NOTIFICATION_POLL_MS = 60_000
+
+export function useNotifications() {
+  const [notifications, setNotifications] = useState<Notification[]>(() => notificationCache)
+  const [unreadCount, setUnreadCount] = useState<number>(() => notificationUnread)
+
+  useEffect(() => {
+    let cancelled = false
+    const sync = () => {
+      if (cancelled) return
+      setNotifications([...notificationCache])
+      setUnreadCount(notificationUnread)
+    }
+    notificationListeners.add(sync)
+
+    const load = () => {
+      fetchNotificationsOnce()
+        .then((fresh) => {
+          if (cancelled) return
+          notificationCache = fresh.results
+          notificationUnread = fresh.unreadCount
+          notifyNotifications()
+        })
+        .catch(() => {
+          if (cancelled) return
+        })
+    }
+
+    load()
+    const timer = window.setInterval(load, NOTIFICATION_POLL_MS)
+
+    return () => {
+      cancelled = true
+      notificationListeners.delete(sync)
+      window.clearInterval(timer)
+    }
+  }, [])
+
+  const markRead = useCallback(async (id: number): Promise<void> => {
+    const before = notificationCache.find((n) => n.id === id)
+    if (!before || before.isRead) return
+    const updated = await apiMarkNotificationRead(id)
+    notificationCache = notificationCache.map((n) => (n.id === id ? updated : n))
+    notificationUnread = Math.max(0, notificationUnread - 1)
+    notifyNotifications()
+  }, [])
+
+  const markAllRead = useCallback(async (): Promise<void> => {
+    if (notificationUnread === 0) return
+    await apiMarkAllNotificationsRead()
+    const now = new Date().toISOString()
+    notificationCache = notificationCache.map((n) =>
+      n.isRead ? n : { ...n, isRead: true, readAt: now },
+    )
+    notificationUnread = 0
+    notifyNotifications()
+  }, [])
+
+  return { notifications, unreadCount, markRead, markAllRead }
 }

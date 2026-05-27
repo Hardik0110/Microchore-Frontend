@@ -180,32 +180,6 @@ const PAYOUT_PLACEHOLDERS: Record<PayoutMethod, string> = {
   crypto: '0x... or wallet address',
 }
 
-const USER_KEY = 'microchore:user'
-
-function readPayoutFromStorage(): { method: PayoutMethod | ''; handle: string } {
-  if (typeof window === 'undefined') return { method: '', handle: '' }
-  try {
-    const raw = window.localStorage.getItem(USER_KEY)
-    if (!raw) return { method: '', handle: '' }
-    const obj = JSON.parse(raw) as { payoutMethod?: PayoutMethod; payoutHandle?: string }
-    return { method: obj.payoutMethod ?? '', handle: obj.payoutHandle ?? '' }
-  } catch {
-    return { method: '', handle: '' }
-  }
-}
-
-function writePayoutToStorage(method: PayoutMethod, handle: string) {
-  if (typeof window === 'undefined') return
-  const raw = window.localStorage.getItem(USER_KEY)
-  if (!raw) return
-  try {
-    const obj = JSON.parse(raw)
-    obj.payoutMethod = method
-    obj.payoutHandle = handle
-    window.localStorage.setItem(USER_KEY, JSON.stringify(obj))
-  } catch { }
-}
-
 const THEME_LABELS: Record<ThemeMode, string> = {
   light: 'Light',
   dark: 'Dark',
@@ -220,30 +194,38 @@ const THEME_HINTS: Record<ThemeMode, string> = {
 
 export function SettingsPage() {
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  const { user, logout, updateUser } = useAuth()
   const { mode: themeMode, setMode: setThemeMode } = useTheme()
-  const initial = readPayoutFromStorage()
-  const [method, setMethod] = useState<PayoutMethod | ''>(initial.method)
-  const [handle, setHandle] = useState(initial.handle)
+  const [method, setMethod] = useState<PayoutMethod | ''>((user?.payoutMethod ?? '') as PayoutMethod | '')
+  const [handle, setHandle] = useState(user?.payoutHandle ?? '')
   const [discordOptIn, setDiscordOptIn] = useState(true)
   const [emailDigest, setEmailDigest] = useState(true)
   const [pushApproval, setPushApproval] = useState(true)
   const [confirming, setConfirming] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
 
   if (!user) return null
 
-  function savePayout() {
-    if (!method || !handle.trim()) return
-    writePayoutToStorage(method, handle.trim())
-    setSaved(true)
-    window.setTimeout(() => setSaved(false), 2400)
+  async function savePayout() {
+    if (!method || !handle.trim() || saving) return
+    setSaving(true)
+    setSaveError(null)
+    try {
+      updateUser({ payoutMethod: method, payoutHandle: handle.trim() })
+      setSaved(true)
+      window.setTimeout(() => setSaved(false), 2400)
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Could not save payout.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   function handleResetData() {
     resetMockData()
     if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(USER_KEY)
       window.location.href = '/'
     }
   }
@@ -308,11 +290,15 @@ export function SettingsPage() {
           ) : null}
 
           <div className="flex items-center justify-between">
-            <span className="text-[12px] text-success">
-              {saved ? 'Saved. We will use this on your next approved task.' : ''}
+            <span className="text-[12px]">
+              {saveError ? (
+                <span className="text-danger">{saveError}</span>
+              ) : saved ? (
+                <span className="text-success">Saved. We will use this on your next approved task.</span>
+              ) : null}
             </span>
-            <Button onClick={savePayout} disabled={!method || !handle.trim()}>
-              Save payout
+            <Button onClick={savePayout} disabled={!method || !handle.trim() || saving}>
+              {saving ? 'Saving...' : 'Save payout'}
             </Button>
           </div>
         </Card>

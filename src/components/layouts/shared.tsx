@@ -8,11 +8,11 @@ import {
   type HTMLAttributes,
   type RefObject,
 } from 'react'
-import { NavLink } from 'react-router-dom'
-import { cn, formatCurrency } from '../../lib/ui-utils'
-import { useAuth, type WizardStep } from '../../lib/auth'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { cn, formatCurrency, formatRelative } from '../../lib/ui-utils'
+import { type WizardStep } from '../../lib/auth'
 import { useTheme } from '../../lib/theme'
-import { useEarnings, useSubmissions, useTasks } from '../../lib/store'
+import { useEarnings, useNotifications, useSubmissions, useTasks, type Notification } from '../../lib/store'
 import { LayoutGridIcon as DashboardIcon } from '../ui/layout-grid'
 import { CartIcon as MarketplaceIcon } from '../ui/cart'
 import { WalletIcon as EarningsIcon } from '../ui/wallet'
@@ -240,12 +240,11 @@ export function ThemeToggleButton(_props: { expanded: boolean }) {
 }
 
 export function HeaderNotifications() {
-  const { user } = useAuth()
+  const { notifications, unreadCount, markRead, markAllRead } = useNotifications()
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement | null>(null)
-
-  const inStarterPhase = !!user && !user.realTasksUnlocked && !user.holdReason
-  const hasUnread = inStarterPhase
+  const hasUnread = unreadCount > 0
 
   useEffect(() => {
     if (!open) return
@@ -263,12 +262,31 @@ export function HeaderNotifications() {
     }
   }, [open])
 
+  const onItemClick = useCallback(
+    async (n: Notification) => {
+      if (!n.isRead) {
+        try { await markRead(n.id) } catch { /* ignore */ }
+      }
+      if (n.link) {
+        setOpen(false)
+        navigate(n.link)
+      }
+    },
+    [markRead, navigate],
+  )
+
+  const onMarkAll = useCallback(async () => {
+    try { await markAllRead() } catch { /* ignore */ }
+  }, [markAllRead])
+
+  const badgeLabel = unreadCount > 9 ? '9+' : String(unreadCount)
+
   return (
     <div ref={rootRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label={hasUnread ? 'Notifications, 1 unread' : 'Notifications'}
+        aria-label={hasUnread ? `Notifications, ${unreadCount} unread` : 'Notifications'}
         aria-haspopup="dialog"
         aria-expanded={open}
         className={cn(
@@ -280,9 +298,11 @@ export function HeaderNotifications() {
         <BellIcon />
         {hasUnread ? (
           <span
-            className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent ring-2 ring-bg"
+            className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 inline-flex items-center justify-center rounded-full bg-brand text-white text-[10px] font-bold leading-none ring-2 ring-bg"
             aria-hidden
-          />
+          >
+            {badgeLabel}
+          </span>
         ) : null}
       </button>
 
@@ -290,38 +310,78 @@ export function HeaderNotifications() {
         <div
           role="dialog"
           aria-label="Notifications"
-          style={{
-            backgroundColor: 'var(--paper)',
-            borderColor: 'var(--paper-edge)',
-            color: 'var(--r-ink)',
-          }}
-          className="absolute right-0 top-[calc(100%+10px)] w-[320px] rounded-lg border p-5 shadow-[0_18px_44px_-24px_rgba(0,0,0,0.35)] z-30"
+          className="absolute right-0 top-[calc(100%+10px)] w-[340px] max-h-[420px] flex flex-col rounded-lg border border-divider bg-surface shadow-[0_18px_44px_-24px_rgba(0,0,0,0.18)] z-30"
         >
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[10px] tracking-stamp uppercase" style={{ color: 'var(--r-ink-3)' }}>
+          <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-divider">
+            <span className="font-mono text-[10px] tracking-stamp uppercase text-brand">
               Notifications
             </span>
-          </div>
-          {inStarterPhase ? (
-            <div className="flex flex-col gap-2">
-              <p className="text-[14px] font-medium leading-snug" style={{ color: 'var(--r-ink)' }}>
-                Your first 5 tasks are read by hand.
-              </p>
-              <p className="text-[13px] leading-relaxed" style={{ color: 'var(--r-ink-2)' }}>
-                Most submissions are reviewed inside 48 hours. Real briefs unlock once three of five
-                are approved.
-              </p>
-              <p
-                className="font-serif text-[14px] leading-snug mt-1"
-                style={{ color: 'var(--r-brown)' }}
+            {hasUnread ? (
+              <button
+                type="button"
+                onClick={onMarkAll}
+                className="text-[11px] font-medium text-brand hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 rounded-sm px-1"
               >
-                Take your time. Your voice is what we pay for.
-              </p>
+                Mark all read
+              </button>
+            ) : null}
+          </div>
+
+          {notifications.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 py-8 px-4 text-center">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-soft text-brand">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                  <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                </svg>
+              </span>
+              <p className="text-[13px] text-ink-2 leading-snug">You are all caught up.</p>
             </div>
           ) : (
-            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--r-ink-2)' }}>
-              You are all caught up.
-            </p>
+            <ul className="flex-1 overflow-y-auto divide-y divide-divider">
+              {notifications.map((n) => (
+                <li key={n.id}>
+                  <button
+                    type="button"
+                    onClick={() => onItemClick(n)}
+                    className={cn(
+                      'w-full text-left px-4 py-3 flex flex-col gap-1 transition-colors',
+                      'hover:bg-brand-soft/40 focus-visible:outline-none focus-visible:bg-brand-soft/40',
+                      !n.isRead && 'bg-brand-soft/20',
+                    )}
+                  >
+                    <div className="flex items-start gap-2">
+                      {!n.isRead ? (
+                        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand" aria-hidden />
+                      ) : (
+                        <span className="mt-1.5 h-2 w-2 shrink-0" aria-hidden />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className={cn('text-[13px] leading-snug', n.isRead ? 'text-ink-2' : 'text-ink font-medium')}>
+                          {n.title}
+                        </p>
+                        {n.body ? (
+                          <p className="mt-0.5 text-[12px] text-ink-3 leading-snug">{n.body}</p>
+                        ) : null}
+                        <p className="mt-1 font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+                          {formatRelative(n.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       ) : null}
