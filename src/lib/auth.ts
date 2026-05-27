@@ -3,53 +3,18 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import {
   apiGoogleSignIn,
   apiLogin,
+  apiLogout,
   apiMe,
   apiPatchMe,
   apiSignup,
   clearTokens,
   getAccessToken,
 } from './api'
+import { resetMockData } from './store'
 
-export type Platform = 'instagram' | 'youtube' | 'tiktok' | 'x'
+import type { Platform, LinkedAccount, WizardStep, User } from '../types/user'
 
-export type LinkedAccount = {
-  platform: Platform
-  handle: string
-  followers: number
-  posts: number
-  ageDays: number
-  verifiedAt: string
-  passesCredibility: boolean
-}
-
-export type WizardStep =
-  | 'signup'
-  | 'verify-email'
-  | 'welcome'
-  | 'link-account'
-  | 'attest'
-  | 'tutorial'
-  | 'first-task'
-  | 'done'
-
-export type User = {
-  id: string | number
-  email: string
-  handle?: string
-  country?: string
-  createdAt: string
-  emailVerified: boolean
-  wizardStep: WizardStep
-  linkedAccount?: LinkedAccount | null
-  attestedAt?: string | null
-  tutorialCompletedAt?: string | null
-  starterApproved: number
-  starterRejected: number
-  realTasksUnlocked: boolean
-  holdReason?: string | null
-  payoutMethod?: 'airtm' | 'paypal' | 'crypto' | null
-  payoutHandle?: string | null
-}
+export type { Platform, LinkedAccount, WizardStep, User }
 
 const WIZARD_ORDER: WizardStep[] = [
   'signup',
@@ -61,6 +26,17 @@ const WIZARD_ORDER: WizardStep[] = [
   'first-task',
   'done',
 ]
+
+export const WIZARD_ROUTES: Record<WizardStep, string> = {
+  signup: '/signup',
+  'verify-email': '/onboarding/verify-email',
+  welcome: '/onboarding/welcome',
+  'link-account': '/onboarding/link-account',
+  attest: '/onboarding/attest',
+  tutorial: '/onboarding/tutorial',
+  'first-task': '/onboarding/first-task',
+  done: '/app',
+}
 
 export function wizardStepIndex(step: WizardStep) {
   return WIZARD_ORDER.indexOf(step)
@@ -90,14 +66,16 @@ type AuthContextValue = {
   user: User | null
   isAuthenticated: boolean
   isHydrating: boolean
+  syncError: string | null
   signup: (email: string, password: string, extras?: { handle?: string; country?: string }) => Promise<User>
   login: (email: string, password: string) => Promise<User>
   googleSignIn: (credential: string) => Promise<User>
-  logout: () => void
+  logout: () => Promise<void>
   updateUser: (patch: Partial<User>) => User | null
   setWizardStep: (step: WizardStep) => void
   advanceWizard: () => WizardStep | null
   refreshUser: () => Promise<User | null>
+  clearSyncError: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
@@ -136,7 +114,9 @@ function hydrateMe(): Promise<User> {
 export function useAuthProvider(): AuthContextValue {
   const [user, setUser] = useState<User | null>(null)
   const [isHydrating, setIsHydrating] = useState<boolean>(true)
+  const [syncError, setSyncError] = useState<string | null>(null)
   const userRef = useRef<User | null>(null)
+  const clearSyncError = useCallback(() => setSyncError(null), [])
 
   useEffect(() => {
     userRef.current = user
@@ -196,9 +176,13 @@ export function useAuthProvider(): AuthContextValue {
     return u
   }, [commit])
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const blacklistTask = apiLogout().catch(() => undefined)
     clearTokens()
+    resetMockData()
+    setSyncError(null)
     commit(null)
+    await blacklistTask
   }, [commit])
 
   const updateUser = useCallback(
@@ -209,7 +193,13 @@ export function useAuthProvider(): AuthContextValue {
       commit(next)
       const remote = pickRemotePatch(patch)
       if (Object.keys(remote).length > 0) {
-        apiPatchMe(remote).catch(() => { })
+        apiPatchMe(remote).catch((err: unknown) => {
+          const message = err instanceof Error ? err.message : 'Could not sync changes to server.'
+          if (typeof console !== 'undefined') {
+            console.error('apiPatchMe failed', err)
+          }
+          setSyncError(message)
+        })
       }
       return next
     },
@@ -246,6 +236,7 @@ export function useAuthProvider(): AuthContextValue {
       user,
       isAuthenticated: !!user,
       isHydrating,
+      syncError,
       signup,
       login,
       googleSignIn,
@@ -254,8 +245,9 @@ export function useAuthProvider(): AuthContextValue {
       setWizardStep,
       advanceWizard,
       refreshUser,
+      clearSyncError,
     }),
-    [user, isHydrating, signup, login, googleSignIn, logout, updateUser, setWizardStep, advanceWizard, refreshUser],
+    [user, isHydrating, syncError, signup, login, googleSignIn, logout, updateUser, setWizardStep, advanceWizard, refreshUser, clearSyncError],
   )
 }
 

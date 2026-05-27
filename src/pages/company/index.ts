@@ -1,0 +1,5 @@
+export { CompanyDashboardPage } from './CompanyDashboardPage'
+export { CompanyProjectsListPage } from './CompanyProjectsListPage'
+export { CompanyNewProjectPage } from './CompanyNewProjectPage'
+export { CompanyProjectDetailPage } from './CompanyProjectDetailPage'
+export { CompanyNewTaskPage } from './CompanyNewTaskPage'

@@ -82,7 +82,8 @@ export function SignupPage() {
             text="continue_with"
             shape="rectangular"
             theme="outline"
-            width="380"
+            logo_alignment="center"
+            width="400"
           />
         </div>
         <div className="flex items-center gap-3 text-[11px] tracking-stamp uppercase text-ink-3 font-mono my-1">
@@ -204,7 +205,8 @@ export function LoginPage() {
             text="signin_with"
             shape="rectangular"
             theme="outline"
-            width="380"
+            logo_alignment="center"
+            width="400"
           />
         </div>
         <div className="flex items-center gap-3 text-[11px] tracking-stamp uppercase text-ink-3 font-mono my-1">

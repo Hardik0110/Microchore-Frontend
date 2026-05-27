@@ -191,14 +191,27 @@ type EyebrowProps = {
   className?: string
 }
 
-export function Eyebrow({ children, className }: EyebrowProps) {
+const EYEBROW_DOT_COLOR: Record<NonNullable<EyebrowProps['dotColor']>, string> = {
+  accent: 'bg-brand',
+  success: 'bg-success',
+  danger: 'bg-danger',
+  info: 'bg-info',
+}
+
+export function Eyebrow({ children, dot, dotColor = 'accent', className }: EyebrowProps) {
   return (
     <span
       className={cn(
-        'inline-block font-mono text-[10px] tracking-stamp uppercase text-ink-3',
+        'inline-flex items-center gap-1.5 font-mono text-[10px] tracking-stamp uppercase text-ink-3',
         className
       )}
     >
+      {dot ? (
+        <span
+          aria-hidden
+          className={cn('inline-block h-1.5 w-1.5 rounded-full', EYEBROW_DOT_COLOR[dotColor])}
+        />
+      ) : null}
       {children}
     </span>
   )

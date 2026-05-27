@@ -1,86 +1,38 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { shortId } from './ui-utils'
 import {
   apiClaimTask,
+  apiCreateProject,
+  apiCreateProjectTask,
   apiCreateSubmission,
   apiGetMySubmissions,
+  apiGetProjects,
   apiGetTasks,
   apiReviewSubmission,
+  apiUpdateProjectStatus,
 } from './api'
+import type {
+  TaskKind,
+  TaskTone,
+  TaskPlatform,
+  Task,
+  Submission,
+  SubmissionCreatePayload,
+  EarningsSummary,
+  Project,
+  ProjectTaskInput,
+} from '../types'
 
-export type TaskKind = 'starter' | 'real'
-export type TaskTone = 'lifestyle' | 'product' | 'story' | 'disagreement' | 'brand'
-export type TaskPlatform = 'instagram' | 'youtube' | 'tiktok' | 'x'
-
-export type Task = {
-  id: string | number
-  kind: TaskKind
-  projectId?: string
-  platform: TaskPlatform
-  targetHandle: string
-  targetUrl: string
-  brief: string
-  keyword: string
-  payRate: number
-  payoutCadence: 'weekly' | 'biweekly' | 'monthly'
-  payoutMin: number
-  payoutMethod: 'airtm' | 'paypal' | 'crypto' | 'any'
-  remaining: number
-  total: number
-  tone: TaskTone
-  expiresAt: string
-  hot?: boolean
-  starterIndex?: number
+export type {
+  TaskKind,
+  TaskTone,
+  TaskPlatform,
+  Task,
+  Submission,
+  SubmissionCreatePayload,
+  EarningsSummary,
+  Project,
+  ProjectTaskInput,
 }
-
-export type Submission = {
-  id: string
-  taskId: string
-  taskTitle: string
-  taskTone: TaskTone
-  text: string
-  commentUrl: string
-  pasteCount: number
-  charsTyped: number
-  pastedChars: number
-  elapsedSec: number
-  attestationSigned: boolean
-  status: 'pending' | 'approved' | 'rejected'
-  rating?: 1 | 2 | 3 | 4 | 5
-  justification?: string
-  basePayout: number
-  bonusPayout: number
-  submittedAt: string
-  reviewedAt?: string
-  isStarter: boolean
-}
-
-export type SubmissionCreatePayload = {
-  taskId: string | number
-  text: string
-  commentUrl: string
-  pasteCount: number
-  charsTyped: number
-  pastedChars: number
-  elapsedSec: number
-  attestationSigned: boolean
-}
-
-export type EarningsSummary = {
-  approvedCount: number
-  pendingCount: number
-  rejectedCount: number
-  totalEarned: number
-  averageRating: number
-  approved: Submission[]
-  latest: Submission | undefined
-  all: Submission[]
-}
-
-const TASKS_KEY = 'microchore:tasks'
-
-const STARTER_TASKS: Task[] = []
-const REAL_TASKS: Task[] = []
 
 let submissionCache: Submission[] = []
 let submissionInflight: Promise<Submission[]> | null = null
@@ -100,16 +52,19 @@ function fetchSubmissionsOnce(): Promise<Submission[]> {
 
 let taskCache: Task[] = []
 let taskInflight: Promise<Task[]> | null = null
+const taskListeners = new Set<() => void>()
 
-const SEED_TASKS: Task[] = [...STARTER_TASKS, ...REAL_TASKS]
+function notifyTasks() {
+  for (const l of taskListeners) l()
+}
 
 export function getAllTasks(): Task[] {
-  return taskCache.length > 0 ? taskCache : SEED_TASKS
+  return taskCache
 }
 
 export function getTaskById(id: string | number): Task | undefined {
   const target = String(id)
-  return getAllTasks().find((t) => String(t.id) === target)
+  return taskCache.find((t) => String(t.id) === target)
 }
 
 function fetchTasksOnce(): Promise<Task[]> {
@@ -121,33 +76,29 @@ function fetchTasksOnce(): Promise<Task[]> {
 }
 
 export function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>(() => getAllTasks())
-  const [error, setError] = useState<string | null>(null)
+  const [tasks, setTasks] = useState<Task[]>(() => taskCache)
 
   useEffect(() => {
     let cancelled = false
+    const sync = () => {
+      if (!cancelled) setTasks([...taskCache])
+    }
+    taskListeners.add(sync)
     fetchTasksOnce()
       .then((fresh) => {
         if (cancelled) return
         taskCache = fresh
-        setTasks(fresh)
-        setError(null)
+        notifyTasks()
       })
-      .catch((err) => {
+      .catch(() => {
         if (cancelled) return
-        setError(err instanceof Error ? err.message : 'Could not load tasks')
-        if (taskCache.length === 0) setTasks(SEED_TASKS)
       })
-
-    const refresh = () => setTasks(getAllTasks())
-    window.addEventListener('microchore:tasks-changed', refresh)
     return () => {
       cancelled = true
-      window.removeEventListener('microchore:tasks-changed', refresh)
+      taskListeners.delete(sync)
     }
   }, [])
 
-  void error
   return tasks
 }
 
@@ -233,127 +184,84 @@ export function useEarnings(): EarningsSummary {
 }
 
 export function resetMockData() {
-  if (typeof window === 'undefined') return
-  window.localStorage.removeItem(TASKS_KEY)
-  window.localStorage.removeItem(PROJECTS_KEY)
+  taskCache = []
   submissionCache = []
+  projectCache = []
+  notifyTasks()
   notifySubmissions()
+  notifyProjects()
 }
 
-export type Project = {
-  id: string
-  companyName: string
-  name: string
-  description: string
-  status: 'draft' | 'active' | 'paused'
-  createdAt: string
+let projectCache: Project[] = []
+let projectInflight: Promise<Project[]> | null = null
+const projectListeners = new Set<() => void>()
+
+function notifyProjects() {
+  for (const l of projectListeners) l()
 }
 
-export type ProjectTaskInput = {
-  platform: TaskPlatform
-  targetHandle: string
-  targetUrl: string
-  keyword: string
-  brief: string
-  tone: TaskTone
-  payRate: number
-  payoutCadence: 'weekly' | 'biweekly' | 'monthly'
-  payoutMethod: 'airtm' | 'paypal' | 'crypto' | 'any'
-  payoutMin: number
-  totalSlots: number
-  expiresAt: string
-}
-
-const PROJECTS_KEY = 'microchore:projects'
-
-function readProjects(): Project[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const raw = window.localStorage.getItem(PROJECTS_KEY)
-    return raw ? (JSON.parse(raw) as Project[]) : []
-  } catch {
-    return []
-  }
-}
-
-function writeProjects(list: Project[]) {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(PROJECTS_KEY, JSON.stringify(list))
+function fetchProjectsOnce(): Promise<Project[]> {
+  if (projectInflight) return projectInflight
+  projectInflight = apiGetProjects().finally(() => {
+    projectInflight = null
+  })
+  return projectInflight
 }
 
 export function getProjectById(id: string): Project | undefined {
-  return readProjects().find((p) => p.id === id)
+  return projectCache.find((p) => p.id === id)
 }
 
 export function useProjects() {
-  const [projects, setProjects] = useState<Project[]>(() => readProjects())
+  const [projects, setProjects] = useState<Project[]>(() => projectCache)
 
   useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === PROJECTS_KEY) setProjects(readProjects())
+    let cancelled = false
+    const sync = () => {
+      if (!cancelled) setProjects([...projectCache])
     }
-    window.addEventListener('storage', onStorage)
-    return () => window.removeEventListener('storage', onStorage)
+    projectListeners.add(sync)
+    fetchProjectsOnce()
+      .then((fresh) => {
+        if (cancelled) return
+        projectCache = fresh
+        notifyProjects()
+      })
+      .catch(() => {
+        if (cancelled) return
+      })
+    return () => {
+      cancelled = true
+      projectListeners.delete(sync)
+    }
   }, [])
 
   const addProject = useCallback(
-    (input: Pick<Project, 'companyName' | 'name' | 'description'>) => {
-      const project: Project = {
-        id: shortId(),
-        companyName: input.companyName,
-        name: input.name,
-        description: input.description,
-        status: 'active',
-        createdAt: new Date().toISOString(),
-      }
-      const nextProjects = [project, ...readProjects()]
-      writeProjects(nextProjects)
-      setProjects(nextProjects)
-      return project
+    async (input: Pick<Project, 'companyName' | 'name' | 'description' | 'targetUrl' | 'payRate'>): Promise<Project> => {
+      const created = await apiCreateProject(input)
+      projectCache = [created, ...projectCache.filter((p) => p.id !== created.id)]
+      notifyProjects()
+      return created
     },
     []
   )
 
   const addProjectTask = useCallback(
-    (projectId: string, input: ProjectTaskInput) => {
-      const task: Task = {
-        id: shortId(),
-        kind: 'real',
-        projectId,
-        platform: input.platform,
-        targetHandle: input.targetHandle,
-        targetUrl: input.targetUrl,
-        brief: input.brief,
-        keyword: input.keyword,
-        payRate: input.payRate,
-        payoutCadence: input.payoutCadence,
-        payoutMethod: input.payoutMethod,
-        payoutMin: input.payoutMin,
-        remaining: input.totalSlots,
-        total: input.totalSlots,
-        tone: input.tone,
-        expiresAt: input.expiresAt,
-      }
-      try {
-        const nextTasks = [task, ...getAllTasks()]
-        window.localStorage.setItem(TASKS_KEY, JSON.stringify(nextTasks))
-        window.dispatchEvent(new Event('microchore:tasks-changed'))
-      } catch {}
-      return task
+    async (projectId: string, input: ProjectTaskInput): Promise<Task> => {
+      const created = await apiCreateProjectTask(projectId, input)
+      taskCache = [created, ...taskCache.filter((t) => String(t.id) !== String(created.id))]
+      notifyTasks()
+      return created
     },
     []
   )
 
   const updateProjectStatus = useCallback(
-    (id: string, status: Project['status']) => {
-      const all = readProjects()
-      const idx = all.findIndex((p) => p.id === id)
-      if (idx < 0) return undefined
-      const next = [...all]
-      next[idx] = { ...all[idx], status }
-      writeProjects(next)
-      setProjects(next)
-      return next[idx]
+    async (id: string, status: Project['status']): Promise<Project | undefined> => {
+      const updated = await apiUpdateProjectStatus(id, status)
+      projectCache = projectCache.map((p) => (p.id === updated.id ? updated : p))
+      notifyProjects()
+      return updated
     },
     []
   )

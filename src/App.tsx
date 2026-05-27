@@ -18,7 +18,7 @@ import {
 import { MarketplacePage } from './pages/marketplace'
 import { ProfilePage, SettingsPage } from './pages/account'
 import { FeedbackPage } from './pages/feedback'
-import { ReviewerPage } from './pages/reviewer'
+import { ReviewerQueuePage } from './pages/reviewer'
 import { SubmissionsPage } from './pages/submissions'
 import {
   CompanyDashboardPage,
@@ -28,6 +28,8 @@ import {
   CompanyProjectsListPage,
 } from './pages/company'
 import { AppLayout, CompanyLayout, OnboardingLayout } from './components/layouts'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { AdminUsersPage } from './pages/admin'
 import { ApiLoader } from './components/ApiLoader'
 import { AuthContext, useAuthProvider } from './lib/auth'
 
@@ -40,11 +42,11 @@ export default function App() {
   return (
     <AuthProvider>
       <ApiLoader />
+      <ErrorBoundary>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
-
         <Route path="/onboarding" element={<OnboardingLayout />}>
           <Route index element={<Navigate to="/onboarding/verify-email" replace />} />
           <Route path="verify-email" element={<VerifyEmailStep />} />
@@ -61,9 +63,9 @@ export default function App() {
           <Route path="tasks" element={<Navigate to="/app/marketplace" replace />} />
           <Route path="tasks/:id" element={<TaskDetailPage />} />
           <Route path="earnings" element={<EarningsPage />} />
+          <Route path="queue" element={<ReviewerQueuePage />} />
           <Route path="submissions" element={<SubmissionsPage />} />
           <Route path="feedback" element={<FeedbackPage />} />
-          <Route path="reviewer" element={<ReviewerPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
@@ -76,8 +78,11 @@ export default function App() {
           <Route path="projects/:id/tasks/new" element={<CompanyNewTaskPage />} />
         </Route>
 
+        <Route path="/admin/users" element={<AdminUsersPage />} />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </ErrorBoundary>
     </AuthProvider>
   )
 }

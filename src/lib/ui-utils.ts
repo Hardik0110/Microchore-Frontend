@@ -23,12 +23,12 @@ export function formatCurrency(value: number, currency = 'USD') {
 export function formatRelative(iso: string, now = new Date()) {
   const then = new Date(iso)
   const diffMs = now.getTime() - then.getTime()
-  const diffMin = Math.round(diffMs / 60000)
+  const diffMin = Math.floor(diffMs / 60000)
   if (diffMin < 1) return 'just now'
   if (diffMin < 60) return `${diffMin}m ago`
-  const diffHr = Math.round(diffMin / 60)
+  const diffHr = Math.floor(diffMin / 60)
   if (diffHr < 24) return `${diffHr}h ago`
-  const diffDay = Math.round(diffHr / 24)
+  const diffDay = Math.floor(diffHr / 24)
   if (diffDay < 7) return `${diffDay}d ago`
   return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
