@@ -208,28 +208,6 @@ export function AppLayout() {
         </header>
 
         <header className="hidden md:flex shrink-0 h-[60px] items-center justify-end gap-6 px-6 lg:px-10 border-b border-divider bg-surface">
-          <Link
-            to="/company"
-            className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium text-ink-2 transition-colors hover:bg-brand-soft hover:text-brand"
-          >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <path d="M3 21h18" />
-              <path d="M5 21V7l8-4v18" />
-              <path d="M19 21V11l-6-4" />
-            </svg>
-            Company view
-          </Link>
-          <span className="h-7 w-px bg-divider" aria-hidden />
           <AppHeaderStats />
           <span className="h-7 w-px bg-divider" aria-hidden />
           <HeaderNotifications />

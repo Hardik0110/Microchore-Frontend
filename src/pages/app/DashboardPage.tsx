@@ -13,7 +13,7 @@ import { ReviewerDashboardPage } from '../reviewer/ReviewerDashboardPage'
 export function DashboardPage() {
   const { user } = useAuth()
   const tasks = useTasks()
-  const { submissions, reviewSubmission } = useSubmissions()
+  const { submissions } = useSubmissions()
 
   if (user?.isReviewer) return <ReviewerDashboardPage />
 
@@ -33,21 +33,6 @@ export function DashboardPage() {
 
   const realTasksUnlocked = (user?.realTasksUnlocked ?? false) && starterReviewedAll
   const accountOnHold = !!user?.holdReason
-
-  function autoReviewAll() {
-    const pending = starterSubs.filter((s) => s.status === 'pending')
-    pending.forEach((s) => {
-      const goodSignal = s.pastedChars < s.charsTyped && s.text.length >= 24
-      void reviewSubmission(
-        s.id,
-        goodSignal ? 'approved' : 'rejected',
-        goodSignal ? 4 : 2,
-        goodSignal
-          ? 'Reads natural, keyword integrated without effort.'
-          : 'Looks pasted, did not meet the bar.',
-      )
-    })
-  }
 
   const totalSubmittedStarter = starterSubs.length
   const submittedStarterIdSet = new Set(starterSubs.map((s) => s.taskId))
@@ -228,7 +213,6 @@ export function DashboardPage() {
             submissions={starterSubs}
             submittedAll={submittedAllStarter}
             reviewedAll={starterReviewedAll}
-            onAutoReview={autoReviewAll}
           />
         ) : (
           <SectionCard
@@ -347,13 +331,11 @@ function StarterRunSection({
   submissions,
   submittedAll,
   reviewedAll,
-  onAutoReview,
 }: {
   tasks: Task[]
   submissions: Submission[]
   submittedAll: boolean
   reviewedAll: boolean
-  onAutoReview?: () => void
 }) {
   const submittedSet = new Set(submissions.map((s) => s.taskId))
   const totalSubmitted = tasks.filter((t) => submittedSet.has(String(t.id))).length
@@ -361,17 +343,6 @@ function StarterRunSection({
   return (
     <SectionCard
       title={`Practice · ${totalSubmitted}/${tasks.length}`}
-      action={
-        import.meta.env.DEV && onAutoReview ? (
-          <button
-            type="button"
-            onClick={onAutoReview}
-            className="inline-flex items-center rounded-md px-2 py-1 -mx-2 -my-1 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft hover:text-brand-deep"
-          >
-            Auto-review
-          </button>
-        ) : null
-      }
     >
       <ul className="divide-y divide-divider">
         {tasks.map((t) => {

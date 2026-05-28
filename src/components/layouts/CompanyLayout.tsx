@@ -201,26 +201,6 @@ export function CompanyLayout() {
         </header>
 
         <header className="hidden md:flex shrink-0 h-[60px] items-center justify-end gap-6 px-6 lg:px-10 border-b border-divider bg-surface">
-          <Link
-            to="/app"
-            className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium text-ink-2 transition-colors hover:bg-brand-soft hover:text-brand"
-          >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-            Worker view
-          </Link>
-          <span className="h-7 w-px bg-divider" aria-hidden />
           <HeaderNotifications />
         </header>
 
