@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /company/
+Disallow: /admin/
+Disallow: /onboarding/
+
+Sitemap: https://microchore.com/sitemap.xml

@@ -1,18 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { GoogleOAuthProvider } from '@react-oauth/google'
 import './index.css'
 import App from './App.tsx'
-
-const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ?? ''
-if (!GOOGLE_CLIENT_ID) {
-  if (import.meta.env.PROD) {
-    throw new Error('VITE_GOOGLE_CLIENT_ID is not set. Google sign-in will not work.')
-  } else {
-    console.warn('VITE_GOOGLE_CLIENT_ID is not set. Google sign-in will not work in this build.')
-  }
-}
 
 ;(() => {
   try {
@@ -30,10 +20,8 @@ if (!GOOGLE_CLIENT_ID) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </GoogleOAuthProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 )

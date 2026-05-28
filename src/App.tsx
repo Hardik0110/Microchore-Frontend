@@ -1,9 +1,27 @@
 import { lazy, Suspense, type ReactNode } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import { AppLayout, CompanyLayout, OnboardingLayout } from './components/layouts'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { ApiLoader } from './components/ApiLoader'
 import { AuthContext, useAuthProvider } from './lib/auth'
+
+const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ?? ''
+if (!GOOGLE_CLIENT_ID) {
+  if (import.meta.env.PROD) {
+    throw new Error('VITE_GOOGLE_CLIENT_ID is not set. Google sign-in will not work.')
+  } else {
+    console.warn('VITE_GOOGLE_CLIENT_ID is not set. Google sign-in will not work in this build.')
+  }
+}
+
+function GoogleAuthLayout() {
+  return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <Outlet />
+    </GoogleOAuthProvider>
+  )
+}
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LoginPage = lazy(() => import('./pages/auth').then((m) => ({ default: m.LoginPage })))
@@ -59,16 +77,19 @@ export default function App() {
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/onboarding" element={<OnboardingLayout />}>
-              <Route index element={<Navigate to="/onboarding/verify-email" replace />} />
-              <Route path="verify-email" element={<VerifyEmailStep />} />
-              <Route path="welcome" element={<WelcomeStep />} />
-              <Route path="link-account" element={<LinkAccountStep />} />
-              <Route path="attest" element={<AttestStep />} />
-              <Route path="tutorial" element={<TutorialStep />} />
-              <Route path="first-task" element={<FirstTaskStep />} />
+
+            <Route element={<GoogleAuthLayout />}>
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/onboarding" element={<OnboardingLayout />}>
+                <Route index element={<Navigate to="/onboarding/verify-email" replace />} />
+                <Route path="verify-email" element={<VerifyEmailStep />} />
+                <Route path="welcome" element={<WelcomeStep />} />
+                <Route path="link-account" element={<LinkAccountStep />} />
+                <Route path="attest" element={<AttestStep />} />
+                <Route path="tutorial" element={<TutorialStep />} />
+                <Route path="first-task" element={<FirstTaskStep />} />
+              </Route>
             </Route>
 
             <Route path="/app" element={<AppLayout />}>
