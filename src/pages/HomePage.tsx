@@ -1,9 +1,21 @@
-import { motion } from 'motion/react'
+import { motion, useScroll, useSpring } from 'motion/react'
 import { Logo } from '../components/ui/Logo'
 
 export default function HomePage() {
+  const { scrollYProgress } = useScroll()
+  const progress = useSpring(scrollYProgress, {
+    stiffness: 220,
+    damping: 30,
+    restDelta: 0.001,
+  })
+
   return (
     <main className="min-h-screen app-canvas text-ink flex flex-col overflow-x-hidden">
+      <motion.div
+        aria-hidden
+        className="fixed top-0 left-0 right-0 h-[3px] origin-left z-50 bg-brand"
+        style={{ scaleX: progress }}
+      />
       <header className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-5 flex items-center justify-between">
         <a
           href="/"
@@ -77,7 +89,12 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="col-span-12 md:col-span-5 anim-slide-in-right" style={{ animationDelay: '520ms' }}>
+        <motion.div
+          className="col-span-12 md:col-span-5"
+          initial={{ opacity: 0, x: 140 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.45, type: 'spring', stiffness: 90, damping: 16, mass: 0.9 }}
+        >
           <div className="receipt p-7 md:-rotate-2 transition-transform duration-300 ease-out hover:-translate-y-1">
             <div className="flex items-baseline justify-between">
               <span className="text-[11px] tracking-stamp uppercase text-r-ink-2">
@@ -102,7 +119,7 @@ export default function HomePage() {
               <span className="stamp stamp--pending anim-stamp-pulse">pending</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       <Section id="how">
@@ -112,22 +129,41 @@ export default function HomePage() {
           accents={['No middlemen']}
           intro="Pick a brief that fits your voice, write a comment a person would actually leave, get paid when a reviewer approves. The full loop runs in under an hour on a good day."
         />
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5">
-          <HowStep
-            n="01"
-            title="Pick a brief"
-            body="Open the marketplace, read a few short briefs, claim one that fits the kind of comments you already leave online. Each brief tells you the post, the target keyword, and the pay rate up front."
-          />
-          <HowStep
-            n="02"
-            title="Write the reply"
-            body="Type your comment in our editor. Paste is disabled and your typing is tracked for quality. Add the keyword naturally, then drop the live link to your comment on the platform."
-          />
-          <HowStep
-            n="03"
-            title="Get paid"
-            body="A reviewer reads it, rates it 1 to 5, and approves or declines with a one-line note. Approved comments stack on your earnings receipt and pay out on Friday."
-          />
+        <div className="mt-12 relative">
+          <svg
+            aria-hidden
+            className="hidden md:block absolute inset-x-0 -top-2 z-0 text-brand/40 pointer-events-none"
+            viewBox="0 0 1200 90"
+            preserveAspectRatio="none"
+            width="100%"
+            height="90"
+          >
+            <path
+              d="M 80 60 Q 250 0 420 60 T 760 60 T 1120 60"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeDasharray="2 9"
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 relative z-10">
+            <HowStep
+              n="01"
+              title="Pick a brief"
+              body="Open the marketplace, read a few short briefs, claim one that fits the kind of comments you already leave online. Each brief tells you the post, the target keyword, and the pay rate up front."
+            />
+            <HowStep
+              n="02"
+              title="Write the reply"
+              body="Type your comment in our editor. Paste is disabled and your typing is tracked for quality. Add the keyword naturally, then drop the live link to your comment on the platform."
+            />
+            <HowStep
+              n="03"
+              title="Get paid"
+              body="A reviewer reads it, rates it 1 to 5, and approves or declines with a one-line note. Approved comments stack on your earnings receipt and pay out on Friday."
+            />
+          </div>
         </div>
       </Section>
 
@@ -144,7 +180,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      <Section id="creators">
+      <Section id="creators" cornerGlow>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
           <div>
             <p className="eyebrow mb-4">For creators &amp; companies</p>
@@ -229,7 +265,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      <Section>
+      <Section cornerGlow>
         <SectionHeader
           eyebrow="The guarantees"
           title="What we will not do."
@@ -322,23 +358,38 @@ export default function HomePage() {
 function Section({
   id,
   variant = 'transparent',
+  cornerGlow = false,
   children,
 }: {
   id?: string
   variant?: 'transparent' | 'surface'
+  cornerGlow?: boolean
   children: React.ReactNode
 }) {
   return (
     <section
       id={id}
       className={
-        variant === 'surface'
-          ? 'border-y border-divider bg-surface/60'
-          : ''
+        'relative ' +
+        (variant === 'surface' ? 'border-y border-divider bg-surface/60' : '')
       }
     >
+      {cornerGlow ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            backgroundImage: `
+              radial-gradient(ellipse 45% 55% at 0% 0%, rgba(37, 99, 235, 0.22), transparent 60%),
+              radial-gradient(ellipse 45% 55% at 100% 0%, rgba(37, 99, 235, 0.20), transparent 60%),
+              radial-gradient(ellipse 45% 55% at 0% 100%, rgba(37, 99, 235, 0.20), transparent 60%),
+              radial-gradient(ellipse 45% 55% at 100% 100%, rgba(37, 99, 235, 0.22), transparent 60%)
+            `,
+          }}
+        />
+      ) : null}
       <motion.div
-        className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-16 md:py-24"
+        className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 py-16 md:py-24"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
@@ -399,8 +450,10 @@ function SectionHeader({
 function HowStep({ n, title, body }: { n: string; title: string; body: string }) {
   return (
     <div className="rounded-xl border border-divider bg-surface p-6 shadow-card transition-transform duration-200 hover:-translate-y-0.5">
-      <span className="font-mono text-[11px] tracking-stamp uppercase text-brand">{n}</span>
-      <h3 className="mt-3 text-[18px] font-semibold text-ink">{title}</h3>
+      <span className="block font-serif text-[44px] md:text-[56px] leading-none tracking-tighter text-brand tabular-nums">
+        {n}
+      </span>
+      <h3 className="mt-4 text-[18px] font-semibold text-ink">{title}</h3>
       <p className="mt-2 text-[13.5px] text-ink-2 leading-relaxed">{body}</p>
     </div>
   )
