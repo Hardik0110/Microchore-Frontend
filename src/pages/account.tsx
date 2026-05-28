@@ -15,7 +15,7 @@ import {
 import { PlatformTag } from '../components/ui/PlatformTag'
 import { Stamp } from '../components/ui/Stamp'
 import { useAuth } from '../lib/auth'
-import { useEarnings, useSubmissions, resetMockData } from '../lib/store'
+import { useEarnings, useSubmissions } from '../lib/store'
 import { useTheme, type ThemeMode } from '../lib/theme'
 import { cn, formatCurrency, formatStampDate } from '../lib/ui-utils'
 
@@ -201,7 +201,6 @@ export function SettingsPage() {
   const [discordOptIn, setDiscordOptIn] = useState(true)
   const [emailDigest, setEmailDigest] = useState(true)
   const [pushApproval, setPushApproval] = useState(true)
-  const [confirming, setConfirming] = useState(false)
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -223,12 +222,6 @@ export function SettingsPage() {
     }
   }
 
-  function handleResetData() {
-    resetMockData()
-    if (typeof window !== 'undefined') {
-      window.location.href = '/'
-    }
-  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -387,31 +380,6 @@ export function SettingsPage() {
           </div>
         </Card>
 
-        {import.meta.env.DEV ? (
-          <Card className="flex flex-col gap-3 border-danger">
-            <Eyebrow dot dotColor="danger">Preview build only</Eyebrow>
-            <p className="text-[13px] text-ink-2 leading-relaxed">
-              This control is hidden in production. It clears the mock user, tasks, and submissions
-              in this browser so you can walk the flow again from scratch.
-            </p>
-            {confirming ? (
-              <div className="flex items-center gap-2 justify-end">
-                <Button variant="ghost" onClick={() => setConfirming(false)}>
-                  Cancel
-                </Button>
-                <Button variant="danger" onClick={handleResetData}>
-                  Yes, wipe and reload
-                </Button>
-              </div>
-            ) : (
-              <div className="flex justify-end">
-                <Button variant="danger" onClick={() => setConfirming(true)}>
-                  Reset preview data
-                </Button>
-              </div>
-            )}
-          </Card>
-        ) : null}
       </section>
     </div>
   )
