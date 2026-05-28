@@ -200,7 +200,13 @@ function TaskCard({ task }: { task: Task }) {
         <PlatformTag platform={task.platform} />
         <div className="flex items-center gap-2">
           {task.hot ? <RowTag label="Hot" tone="danger" /> : null}
-          <RowTag label={`${task.remaining} left`} tone="accent" />
+          {task.remaining <= 3 ? (
+            <span className="animate-pulse">
+              <RowTag label={`Only ${task.remaining} left`} tone="danger" />
+            </span>
+          ) : (
+            <RowTag label={`${task.remaining} left`} tone="accent" />
+          )}
         </div>
       </div>
 

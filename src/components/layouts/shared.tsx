@@ -247,6 +247,18 @@ export function HeaderNotifications() {
   const rootRef = useRef<HTMLDivElement | null>(null)
   const hasUnread = unreadCount > 0
 
+  const oldestUnreadHours = useMemo(() => {
+    const unread = notifications.filter((n) => !n.isRead)
+    if (unread.length === 0) return 0
+    const now = Date.now()
+    const oldest = Math.min(...unread.map((n) => new Date(n.createdAt).getTime()))
+    return Math.max(0, (now - oldest) / 3_600_000)
+  }, [notifications])
+  const urgency: 'fresh' | 'warning' | 'danger' =
+    oldestUnreadHours >= 72 ? 'danger' : oldestUnreadHours >= 24 ? 'warning' : 'fresh'
+  const badgeBg =
+    urgency === 'danger' ? 'bg-danger' : urgency === 'warning' ? 'bg-warning' : 'bg-brand'
+
   useEffect(() => {
     if (!open) return
     function onDocClick(e: MouseEvent) {
@@ -299,7 +311,11 @@ export function HeaderNotifications() {
         <BellIcon />
         {hasUnread ? (
           <span
-            className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 inline-flex items-center justify-center rounded-full bg-brand text-white text-[10px] font-bold leading-none ring-2 ring-bg"
+            className={cn(
+              'absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 inline-flex items-center justify-center rounded-full text-white text-[10px] font-bold leading-none ring-2 ring-bg',
+              badgeBg,
+              urgency === 'danger' && 'animate-pulse',
+            )}
             aria-hidden
           >
             {badgeLabel}

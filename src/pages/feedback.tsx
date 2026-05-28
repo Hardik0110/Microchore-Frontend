@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { motion } from 'motion/react'
 import { StatCard } from '../components/ui/primitives'
 import { Stamp } from '../components/ui/Stamp'
 import { useSubmissions, type Submission } from '../lib/store'
@@ -156,23 +157,34 @@ export function FeedbackPage() {
 function StarRating({ rating }: { rating: number }) {
   return (
     <span className="inline-flex items-center gap-0.5" aria-label={`${rating} of 5`}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <svg
-          key={i}
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill={i < rating ? 'currentColor' : 'none'}
-          stroke="currentColor"
-          strokeWidth="1.75"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={i < rating ? 'text-brand' : 'text-ink-3/40'}
-          aria-hidden
-        >
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z" />
-        </svg>
-      ))}
+      {Array.from({ length: 5 }, (_, i) => {
+        const filled = i < rating
+        return (
+          <motion.svg
+            key={i}
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill={filled ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={filled ? 'text-brand' : 'text-ink-3/40'}
+            aria-hidden
+            initial={{ scale: 0, opacity: 0, rotate: -45 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            transition={{
+              delay: filled ? 0.08 * i : 0.08 * rating + 0.04 * (i - rating),
+              type: 'spring',
+              bounce: 0.55,
+              duration: 0.45,
+            }}
+          >
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z" />
+          </motion.svg>
+        )
+      })}
     </span>
   )
 }
