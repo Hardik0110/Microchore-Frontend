@@ -18,6 +18,20 @@ import { useAuth } from '../lib/auth'
 import { useEarnings, useSubmissions } from '../lib/store'
 import { useTheme, type ThemeMode } from '../lib/theme'
 import { cn, formatCurrency, formatStampDate } from '../lib/ui-utils'
+import type { LinkedAccount, Platform } from '../types'
+
+type PlatformMeta = {
+  value: Platform
+  label: string
+  status: 'live' | 'soon'
+}
+
+const PLATFORMS: PlatformMeta[] = [
+  { value: 'youtube', label: 'YouTube', status: 'live' },
+  { value: 'x', label: 'Twitter', status: 'live' },
+  { value: 'instagram', label: 'Instagram', status: 'soon' },
+  { value: 'tiktok', label: 'TikTok', status: 'soon' },
+]
 
 export function ProfilePage() {
   const { user } = useAuth()
@@ -30,6 +44,12 @@ export function ProfilePage() {
   if (!user) return null
 
   const memberSince = formatStampDate(user.createdAt)
+  const linkedAccounts: LinkedAccount[] =
+    user.linkedAccounts && user.linkedAccounts.length > 0
+      ? user.linkedAccounts
+      : user.linkedAccount
+      ? [user.linkedAccount]
+      : []
 
   return (
     <div className="flex flex-col gap-6">
@@ -69,32 +89,13 @@ export function ProfilePage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-[18px] font-medium text-ink">Linked account</h2>
-        {user.linkedAccount ? (
-          <Card className="flex items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <PlatformTag platform={user.linkedAccount.platform} size={20} />
-              <div className="flex flex-col">
-                <span className="text-[16px] text-ink font-medium">{user.linkedAccount.handle}</span>
-                <span className="text-[12px] text-ink-3">
-                  Verified {formatStampDate(user.linkedAccount.verifiedAt)}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-center gap-6 text-[13px] text-ink-2">
-              <Stat label="Followers" value={user.linkedAccount.followers.toLocaleString()} />
-              <Stat label="Posts" value={user.linkedAccount.posts.toLocaleString()} />
-              <Stat label="Age" value={`${user.linkedAccount.ageDays}d`} />
-            </div>
-          </Card>
-        ) : (
-          <Card>
-            <Eyebrow>No account linked</Eyebrow>
-            <p className="mt-2 text-[14px] text-ink-2">
-              Link a social account in onboarding to start receiving briefs that match it.
-            </p>
-          </Card>
-        )}
+        <div className="flex items-center justify-between">
+          <h2 className="text-[18px] font-medium text-ink">Linked accounts</h2>
+          <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+            {linkedAccounts.length} of {PLATFORMS.length} linked
+          </span>
+        </div>
+        <LinkedAccountsPanel linked={linkedAccounts} />
       </section>
 
       <section className="flex flex-col gap-4">
@@ -162,6 +163,56 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div className="flex flex-col gap-1 text-right">
       <Eyebrow>{label}</Eyebrow>
       <span className="text-[16px] text-ink font-medium">{value}</span>
+    </div>
+  )
+}
+
+function LinkedAccountsPanel({ linked }: { linked: LinkedAccount[] }) {
+  const byPlatform = new Map<Platform, LinkedAccount>(linked.map((a) => [a.platform, a]))
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {PLATFORMS.map((p) => {
+        const account = byPlatform.get(p.value)
+        if (account) {
+          return (
+            <Card key={p.value} className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <PlatformTag platform={account.platform} size={18} />
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[14px] text-ink font-medium truncate">{account.handle}</span>
+                  <span className="text-[11px] text-ink-3">
+                    Verified {formatStampDate(account.verifiedAt)}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 text-[12px] text-ink-2 shrink-0">
+                <Stat label="Followers" value={account.followers.toLocaleString()} />
+                <Stat label="Posts" value={account.posts.toLocaleString()} />
+              </div>
+            </Card>
+          )
+        }
+        return (
+          <Card key={p.value} className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <PlatformTag platform={p.value} size={18} className="opacity-60" />
+              <div className="flex flex-col">
+                <span className="text-[14px] text-ink font-medium">{p.label}</span>
+                <span className="text-[11px] text-ink-3">Not linked yet</span>
+              </div>
+            </div>
+            {p.status === 'live' ? (
+              <Link to="/onboarding/link-account">
+                <Button size="sm" variant="ghost">+ Link</Button>
+              </Link>
+            ) : (
+              <Button size="sm" variant="ghost" disabled title="OAuth flow not yet wired">
+                Coming soon
+              </Button>
+            )}
+          </Card>
+        )
+      })}
     </div>
   )
 }

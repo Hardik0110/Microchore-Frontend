@@ -32,6 +32,7 @@ export type User = {
   emailVerified: boolean
   wizardStep: WizardStep
   linkedAccount?: LinkedAccount | null
+  linkedAccounts?: LinkedAccount[]
   attestedAt?: string | null
   tutorialCompletedAt?: string | null
   starterApproved: number
