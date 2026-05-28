@@ -21,10 +21,10 @@ export function AttestStep() {
 
   return (
     <StepShell
-      eyebrow="Attestation"
+      eyebrow="Attestation · Almost there"
       title="Three things we ask, plainly."
       accents={['plainly']}
-      intro="These keep the bar high and protect you if a brief ever goes wrong."
+      intro="Four steps down, two to go. These keep the bar high and protect you if a brief ever goes wrong."
     >
       <Card className="flex flex-col gap-5">
         <Checkbox

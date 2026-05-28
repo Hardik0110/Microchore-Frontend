@@ -266,7 +266,7 @@ export function HeaderNotifications() {
   const onItemClick = useCallback(
     async (n: Notification) => {
       if (!n.isRead) {
-        try { await markRead(n.id) } catch { /* ignore */ }
+        try { await markRead(n.id) } catch { void 0 }
       }
       if (n.link) {
         setOpen(false)
@@ -277,7 +277,7 @@ export function HeaderNotifications() {
   )
 
   const onMarkAll = useCallback(async () => {
-    try { await markAllRead() } catch { /* ignore */ }
+    try { await markAllRead() } catch { void 0 }
   }, [markAllRead])
 
   const badgeLabel = unreadCount > 9 ? '9+' : String(unreadCount)

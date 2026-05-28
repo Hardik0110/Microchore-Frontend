@@ -14,6 +14,8 @@ import { PlatformTag } from '../../components/ui/PlatformTag'
 import { useAuth } from '../../lib/auth'
 import { useSubmissions, useTasks } from '../../lib/store'
 import { cn, formatCurrency, usePasteTracker } from '../../lib/ui-utils'
+import { fireSideCannons } from '../../lib/confetti'
+import { haptics } from '../../lib/haptics'
 import { StepShell } from './shared'
 
 export function FirstTaskStep() {
@@ -70,8 +72,12 @@ export function FirstTaskStep() {
         },
         true,
       )
-      advanceWizard()
-      navigate('/app')
+      fireSideCannons(1500)
+      haptics.success()
+      window.setTimeout(() => {
+        advanceWizard()
+        navigate('/app')
+      }, 1600)
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Could not submit your first task. Please try again.')
     } finally {
@@ -81,10 +87,10 @@ export function FirstTaskStep() {
 
   return (
     <StepShell
-      eyebrow="First task"
+      eyebrow="Final step · 90% done"
       title="One task. Real review. Within 48 hours."
       accents={['real review']}
-      intro="The platform team reads it personally and writes a one-line note. Four more practice tasks unlock on the dashboard once you submit."
+      intro="Last thing before the dashboard. The platform team reads it personally and writes a one-line note. Four more practice tasks unlock on the dashboard once you submit."
     >
       <Card className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4 flex-wrap">

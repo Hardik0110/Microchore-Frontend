@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'motion/react'
 import { Button, Card, RowTag } from '../../components/ui/primitives'
 import { PlatformTag } from '../../components/ui/PlatformTag'
 import { Stamp } from '../../components/ui/Stamp'
@@ -60,6 +61,36 @@ export function DashboardPage() {
         return tb - ta
       })
       .slice(0, 5)
+  }, [submissions])
+
+  const streak = useMemo(() => {
+    const approved = submissions.filter((s) => s.status === 'approved')
+    if (approved.length === 0) return 0
+    const days = new Set(
+      approved.map((s) => {
+        const d = new Date(s.reviewedAt ?? s.submittedAt)
+        return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+      }),
+    )
+    const today = new Date()
+    const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`
+    const yest = new Date(today)
+    yest.setDate(today.getDate() - 1)
+    const yestKey = `${yest.getFullYear()}-${yest.getMonth()}-${yest.getDate()}`
+    if (!days.has(todayKey) && !days.has(yestKey)) return 0
+    let count = 0
+    const cursor = new Date(today)
+    if (!days.has(todayKey)) cursor.setDate(cursor.getDate() - 1)
+    for (let i = 0; i < 365; i++) {
+      const key = `${cursor.getFullYear()}-${cursor.getMonth()}-${cursor.getDate()}`
+      if (days.has(key)) {
+        count += 1
+        cursor.setDate(cursor.getDate() - 1)
+      } else {
+        break
+      }
+    }
+    return count
   }, [submissions])
   const stripCtaTo = nextStarter
     ? `/app/tasks/${nextStarter.id}`
@@ -126,11 +157,46 @@ export function DashboardPage() {
         </Link>
       </div>
 
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">Dashboard</h1>
-        <p className="text-xs text-ink-3 mt-0.5">
-          {dateLabel} · {realTasksUnlocked ? 'Cleared for real briefs' : accountOnHold ? 'On hold' : 'Practice run in progress'}
-        </p>
+      <div className="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">Dashboard</h1>
+          <p className="text-xs text-ink-3 mt-0.5">
+            {dateLabel} · {realTasksUnlocked ? 'Cleared for real briefs' : accountOnHold ? 'On hold' : 'Practice run in progress'}
+          </p>
+        </div>
+        {streak > 0 ? (
+          <div className="flex items-center gap-2.5 rounded-full border border-divider bg-surface px-3.5 py-1.5 shadow-card">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-soft text-brand">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+              </svg>
+            </span>
+            <div className="flex items-baseline gap-1.5">
+              <motion.span
+                key={streak}
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', bounce: 0.6, duration: 0.5 }}
+                className="font-mono text-[20px] font-bold tabular-nums text-ink leading-none"
+              >
+                {streak}
+              </motion.span>
+              <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+                {streak === 1 ? 'day streak' : 'day streak'}
+              </span>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {accountOnHold ? (

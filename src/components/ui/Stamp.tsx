@@ -1,5 +1,7 @@
-import { type ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
+import { motion } from 'motion/react'
 import { cn } from '../../lib/ui-utils'
+import { haptics } from '../../lib/haptics'
 
 type StampTone = 'approved' | 'rejected' | 'pending' | 'hot' | 'paid' | 'void'
 
@@ -26,20 +28,40 @@ type StampProps = {
   children?: ReactNode
   className?: string
   rotateDeg?: number
+  animateIn?: boolean
 }
 
-export function Stamp({ tone, children, className, rotateDeg = -2.5 }: StampProps) {
-  const rotation = rotateDeg
+export function Stamp({ tone, children, className, rotateDeg, animateIn = false }: StampProps) {
+  const rotation = useMemo(() => {
+    if (typeof rotateDeg === 'number') return rotateDeg
+    return -2.5 + (Math.random() * 5 - 2.5)
+  }, [rotateDeg])
+
+  const baseClass = cn(
+    'inline-block border-[1.5px] rounded-[4px] px-2.5 py-1 font-mono text-[11px] font-semibold tracking-stamp uppercase',
+    toneClasses[tone],
+    className,
+  )
+  const label = children ?? defaultLabels[tone]
+
+  if (!animateIn) {
+    return (
+      <span className={baseClass} style={{ transform: `rotate(${rotation}deg)` }}>
+        {label}
+      </span>
+    )
+  }
+
   return (
-    <span
-      className={cn(
-        'inline-block border-[1.5px] rounded-[4px] px-2.5 py-1 font-mono text-[11px] font-semibold tracking-stamp uppercase',
-        toneClasses[tone],
-        className
-      )}
-      style={{ transform: `rotate(${rotation < 0 ? rotation : -2.5}deg)` }}
+    <motion.span
+      className={baseClass}
+      initial={{ opacity: 0, scale: 4, rotate: rotation }}
+      animate={{ opacity: 1, scale: 1, rotate: rotation }}
+      transition={{ type: 'spring', bounce: 0.3, duration: 0.4 }}
+      onAnimationComplete={() => haptics.stamp()}
+      style={{ display: 'inline-block' }}
     >
-      {children ?? defaultLabels[tone]}
-    </span>
+      {label}
+    </motion.span>
   )
 }

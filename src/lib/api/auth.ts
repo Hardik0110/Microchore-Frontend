@@ -56,7 +56,7 @@ export async function apiLogout(): Promise<void> {
       skipAuth: true,
     })
   } catch {
-    // Best-effort blacklist; local state is cleared by the caller regardless.
+    void 0
   }
 }
 
