@@ -61,7 +61,7 @@ export function SectionCard({
 
 export function EmptyRow({ message }: { message: string }) {
   return (
-    <div className="p-8 flex items-center justify-center text-center">
+    <div className="h-full min-h-[160px] p-8 flex items-center justify-center text-center">
       <p className="text-[13px] text-ink-3 max-w-[40ch]">{message}</p>
     </div>
   )

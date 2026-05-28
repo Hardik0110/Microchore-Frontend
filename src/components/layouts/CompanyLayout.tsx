@@ -59,7 +59,7 @@ export function CompanyLayout() {
   const displayName = user.linkedAccount?.handle ?? user.email.split('@')[0]
 
   return (
-    <div className="h-screen h-svh flex overflow-hidden bg-bg text-ink">
+    <div className="h-screen h-svh flex overflow-hidden app-canvas text-ink">
       <aside
         className={cn(
           'hidden md:flex fixed left-0 top-0 bottom-0 z-30 bg-surface border-r border-divider flex-col transition-[width] duration-300 ease-out',
@@ -78,8 +78,8 @@ export function CompanyLayout() {
         </button>
         <div
           className={cn(
-            'shrink-0 flex items-center h-[60px] border-b border-divider',
-            collapsed ? 'justify-center' : 'px-4 gap-2'
+            'shrink-0 flex items-center justify-center h-[60px] border-b border-divider',
+            collapsed ? '' : 'px-4 gap-2'
           )}
         >
           {collapsed ? (

@@ -34,7 +34,7 @@ export function OnboardingLayout() {
   const stepNumber = Math.max(1, visibleIdx + 1)
 
   return (
-    <main className="min-h-screen bg-bg text-ink flex flex-col">
+    <main className="min-h-screen app-canvas text-ink flex flex-col">
       <header className="mx-auto w-full max-w-3xl px-6 py-5 flex items-center justify-between">
         <Link to="/" aria-label="microchore home" className="transition-opacity hover:opacity-80">
           <Logo className="h-8 w-auto" />

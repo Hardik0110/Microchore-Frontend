@@ -9,12 +9,12 @@ function isThemeMode(value: unknown): value is ThemeMode {
 }
 
 export function readStoredTheme(): ThemeMode {
-  if (typeof window === 'undefined') return 'system'
+  if (typeof window === 'undefined') return 'light'
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (isThemeMode(raw)) return raw
   } catch {}
-  return 'system'
+  return 'light'
 }
 
 export function resolveTheme(mode: ThemeMode): 'light' | 'dark' {

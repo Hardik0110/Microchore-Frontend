@@ -17,6 +17,7 @@ import { LayoutGridIcon as DashboardIcon } from '../ui/layout-grid'
 import { CartIcon as MarketplaceIcon } from '../ui/cart'
 import { WalletIcon as EarningsIcon } from '../ui/wallet'
 import { MessageSquareIcon as FeedbackIcon } from '../ui/message-square'
+import { InboxIcon as SubmissionsIcon } from '../ui/inbox'
 import { ClipboardCheckIcon as QueueIcon } from '../ui/clipboard-check'
 import { UserIcon as ProfileIcon } from '../ui/user'
 import { SettingsIcon } from '../ui/settings'
@@ -77,7 +78,7 @@ export const NAV_SECTIONS: NavSection[] = [
     label: 'Work',
     items: [
       { path: '/app/marketplace', label: 'Marketplace', icon: MarketplaceIcon, hiddenForReviewer: true },
-      { path: '/app/submissions', label: 'Submissions', icon: FeedbackIcon, hiddenForReviewer: true },
+      { path: '/app/submissions', label: 'Submissions', icon: SubmissionsIcon, hiddenForReviewer: true },
       { path: '/app/earnings', label: 'Earnings', icon: EarningsIcon },
       { path: '/app/feedback', label: 'Feedback', icon: FeedbackIcon },
     ],
