@@ -10,6 +10,9 @@ export function OnboardingLayout() {
   const location = useLocation()
   const navigate = useNavigate()
 
+  const isStandaloneLink =
+    location.pathname.startsWith('/onboarding/link-account')
+
   useEffect(() => {
     if (isHydrating) return
     if (!user) {
@@ -17,6 +20,7 @@ export function OnboardingLayout() {
       return
     }
     if (user.wizardStep === 'done') {
+      if (isStandaloneLink) return
       navigate('/app', { replace: true })
       return
     }
@@ -24,12 +28,14 @@ export function OnboardingLayout() {
     if (expected && !location.pathname.startsWith(expected)) {
       navigate(expected, { replace: true })
     }
-  }, [user, isHydrating, location.pathname, navigate])
+  }, [user, isHydrating, location.pathname, navigate, isStandaloneLink])
 
   if (isHydrating) return null
-  if (!user || user.wizardStep === 'done') return null
+  if (!user) return null
+  if (user.wizardStep === 'done' && !isStandaloneLink) return null
 
-  const visibleIdx = VISIBLE_STEPS.indexOf(user.wizardStep)
+  const isDone = user.wizardStep === 'done'
+  const visibleIdx = isDone ? -1 : VISIBLE_STEPS.indexOf(user.wizardStep)
   const total = VISIBLE_STEPS.length
   const stepNumber = Math.max(1, visibleIdx + 1)
 
@@ -39,19 +45,27 @@ export function OnboardingLayout() {
         <Link to="/" aria-label="microchore home" className="transition-opacity hover:opacity-80">
           <Logo className="h-8 w-auto" />
         </Link>
-        <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
-          Step {stepNumber} of {total}
-        </span>
+        {isDone ? (
+          <Link to="/app/profile" className="font-mono text-[10px] tracking-stamp uppercase text-ink-3 hover:text-brand transition-colors">
+            Back to profile
+          </Link>
+        ) : (
+          <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+            Step {stepNumber} of {total}
+          </span>
+        )}
       </header>
 
-      <div className="mx-auto w-full max-w-3xl px-6 pb-3">
-        <ProgressBar
-          value={Math.max(0, visibleIdx)}
-          total={total}
-          segments
-          ariaLabel="Onboarding progress"
-        />
-      </div>
+      {isDone ? null : (
+        <div className="mx-auto w-full max-w-3xl px-6 pb-3">
+          <ProgressBar
+            value={Math.max(0, visibleIdx)}
+            total={total}
+            segments
+            ariaLabel="Onboarding progress"
+          />
+        </div>
+      )}
 
       <div className="flex-1 flex items-start justify-center px-6 pt-8 pb-20">
         <div className="w-full max-w-2xl">

@@ -168,7 +168,15 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 function LinkedAccountsPanel({ linked }: { linked: LinkedAccount[] }) {
+  const navigate = useNavigate()
   const byPlatform = new Map<Platform, LinkedAccount>(linked.map((a) => [a.platform, a]))
+
+  function startLink() {
+    try {
+      sessionStorage.setItem('microchore:link-return', '/app/profile')
+    } catch { void 0 }
+    navigate('/onboarding/link-account')
+  }
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {PLATFORMS.map((p) => {
@@ -202,9 +210,7 @@ function LinkedAccountsPanel({ linked }: { linked: LinkedAccount[] }) {
               </div>
             </div>
             {p.status === 'live' ? (
-              <Link to="/onboarding/link-account">
-                <Button size="sm" variant="ghost">+ Link</Button>
-              </Link>
+              <Button size="sm" variant="ghost" onClick={startLink}>+ Link</Button>
             ) : (
               <Button size="sm" variant="ghost" disabled title="OAuth flow not yet wired">
                 Coming soon

@@ -133,6 +133,21 @@ export function LinkAccountStep() {
 
   function handleContinue() {
     if (!result?.passesCredibility) return
+    let returnTo: string | null = null
+    try {
+      returnTo = window.sessionStorage.getItem('microchore:link-return')
+    } catch { void 0 }
+    if (returnTo) {
+      try {
+        window.sessionStorage.removeItem('microchore:link-return')
+      } catch { void 0 }
+      navigate(returnTo)
+      return
+    }
+    if (user?.wizardStep === 'done') {
+      navigate('/app/profile')
+      return
+    }
     const nextStep = user ? wizardNext(user.wizardStep) : 'attest'
     advanceWizard()
     navigate(WIZARD_ROUTES[nextStep])
