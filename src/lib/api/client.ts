@@ -1,7 +1,17 @@
 import { ACCESS_KEY, REFRESH_KEY } from '../../constants/storage'
 
-export const API_URL =
-  (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || 'http://127.0.0.1:8000'
+const RAW_API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '')
+
+if (import.meta.env.PROD) {
+  if (!RAW_API_URL) {
+    throw new Error('VITE_API_URL must be set in production builds.')
+  }
+  if (!/^https:\/\//i.test(RAW_API_URL)) {
+    throw new Error('VITE_API_URL must use https in production builds.')
+  }
+}
+
+export const API_URL = RAW_API_URL || 'http://127.0.0.1:8000'
 
 export function getAccessToken(): string | null {
   if (typeof window === 'undefined') return null
@@ -42,6 +52,20 @@ export class ApiError extends Error {
 type InflightListener = () => void
 let inflightCount = 0
 const inflightListeners = new Set<InflightListener>()
+
+type SessionExpiredListener = () => void
+const sessionExpiredListeners = new Set<SessionExpiredListener>()
+
+export function subscribeSessionExpired(listener: SessionExpiredListener): () => void {
+  sessionExpiredListeners.add(listener)
+  return () => {
+    sessionExpiredListeners.delete(listener)
+  }
+}
+
+function notifySessionExpired() {
+  for (const l of sessionExpiredListeners) l()
+}
 
 export function getApiInflightCount(): number {
   return inflightCount
@@ -160,6 +184,7 @@ export async function apiFetch<T = unknown>(path: string, opts: FetchOpts = {}):
         return apiFetch<T>(path, { ...opts, isRetry: true })
       }
       clearTokens()
+      notifySessionExpired()
       throw new ApiError(401, 'Session expired. Please sign in again.', payload)
     }
 

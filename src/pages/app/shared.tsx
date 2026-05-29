@@ -51,7 +51,7 @@ export function SectionCard({
   return (
     <div className="flex flex-col overflow-hidden bg-surface border border-divider rounded-xl shadow-card">
       <div className="flex h-12 shrink-0 items-center justify-between border-b border-divider px-5">
-        <h3 className="text-[14px] font-semibold text-ink">{title}</h3>
+        <h3 className="text-sm font-semibold text-ink">{title}</h3>
         {action}
       </div>
       <div className="min-h-0 flex-1 overflow-auto">{children}</div>
@@ -62,7 +62,7 @@ export function SectionCard({
 export function EmptyRow({ message }: { message: string }) {
   return (
     <div className="h-full min-h-[160px] p-8 flex items-center justify-center text-center">
-      <p className="text-[13px] text-ink-3 max-w-[40ch]">{message}</p>
+      <p className="text-sm text-ink-3 max-w-[40ch]">{message}</p>
     </div>
   )
 }

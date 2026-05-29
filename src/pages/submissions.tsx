@@ -13,7 +13,7 @@ const STATUS_LABEL: Record<StatusKey, string> = {
 }
 
 const STATUS_CLASS: Record<StatusKey, string> = {
-  pending: 'bg-grey-soft text-ink-2',
+  pending: 'bg-ghost-soft text-ink-2',
   approved: 'bg-brand-50 text-brand-700',
   rejected: 'bg-red-50 text-red-700',
 }
@@ -84,7 +84,7 @@ export function SubmissionsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-bg text-[11px] uppercase tracking-wide text-ink-3 text-left">
+                <tr className="bg-bg text-xs uppercase tracking-wide text-ink-3 text-left">
                   <th className="px-4 py-3 font-medium">Task</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Submitted</th>
@@ -98,14 +98,14 @@ export function SubmissionsPage() {
                     <td className="px-4 py-3">
                       <div className="flex flex-col">
                         <span className="text-ink font-medium">{row.taskTitle}</span>
-                        <span className="text-[11px] text-ink-3 uppercase tracking-wide">
+                        <span className="text-xs text-ink-3 uppercase tracking-wide">
                           {row.taskTone} {row.isStarter ? '· practice' : ''}
                         </span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className={
-                        'inline-flex rounded-full px-2.5 py-1 text-[11px] font-medium ' +
+                        'inline-flex rounded-full px-2.5 py-1 text-xs font-medium ' +
                         STATUS_CLASS[row.status]
                       }>
                         {STATUS_LABEL[row.status]}
@@ -136,7 +136,7 @@ export function SubmissionsPage() {
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="rounded-lg border border-divider bg-surface p-3 flex flex-col gap-1">
-      <span className="text-[11px] uppercase tracking-wide text-ink-3">{label}</span>
+      <span className="text-xs uppercase tracking-wide text-ink-3">{label}</span>
       <span className={accent ? 'text-brand text-lg font-semibold' : 'text-ink text-base font-medium'}>
         {value}
       </span>

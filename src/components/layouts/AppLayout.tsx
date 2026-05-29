@@ -9,6 +9,7 @@ import { CartIcon as MarketplaceIcon } from '../ui/cart'
 import { WalletIcon as EarningsIcon } from '../ui/wallet'
 import { MessageSquareIcon as FeedbackIcon } from '../ui/message-square'
 import { UserIcon as ProfileIcon } from '../ui/user'
+import { SettingsIcon } from '../ui/settings'
 import {
   AppHeaderStats,
   AppNavLink,
@@ -55,7 +56,8 @@ export function AppLayout() {
       return
     }
     if (user.wizardStep !== 'done') {
-      navigate(WIZARD_ROUTES[user.wizardStep], { replace: true })
+      const target = WIZARD_ROUTES[user.wizardStep] ?? '/onboarding/verify-email'
+      navigate(target, { replace: true })
     }
   }, [user, isHydrating, navigate])
 
@@ -121,7 +123,7 @@ export function AppLayout() {
                 <div className={cn('mb-3 border-t border-divider mx-2', !collapsed && 'mb-4')} />
               ) : null}
               {!collapsed ? (
-                <p className="mb-2 px-3 text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-3">
+                <p className="mb-2 px-3 text-2xs font-bold uppercase tracking-[0.1em] text-ink-3">
                   {section.label}
                 </p>
               ) : null}
@@ -161,7 +163,7 @@ export function AppLayout() {
             )}
           >
             <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-400 text-[13px] font-bold text-white"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-400 text-sm font-bold text-white"
               aria-hidden
               title={collapsed ? displayName : undefined}
             >
@@ -169,9 +171,9 @@ export function AppLayout() {
             </div>
             {!collapsed ? (
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13.5px] font-medium text-ink">{displayName}</p>
+                <p className="truncate text-sm font-medium text-ink">{displayName}</p>
                 {user.email ? (
-                  <p className="truncate text-[11.5px] text-ink-3 mt-0.5">{user.email}</p>
+                  <p className="truncate text-xs text-ink-3 mt-0.5">{user.email}</p>
                 ) : null}
               </div>
             ) : null}
@@ -204,7 +206,16 @@ export function AppLayout() {
           <Link to="/app" aria-label="microchore home" className="transition-opacity hover:opacity-80">
             <Logo className="h-8 w-auto" />
           </Link>
-          <HeaderNotifications />
+          <div className="flex items-center gap-1">
+            <Link
+              to="/app/settings"
+              aria-label="Settings"
+              className="p-2 rounded-md text-ink-3 transition-colors hover:bg-muted hover:text-ink"
+            >
+              <SettingsIcon size={20} />
+            </Link>
+            <HeaderNotifications />
+          </div>
         </header>
 
         <header className="hidden md:flex shrink-0 h-[60px] items-center justify-end gap-6 px-6 lg:px-10 border-b border-divider bg-surface">
@@ -235,7 +246,7 @@ export function AppLayout() {
                 end={item.end}
                 className={({ isActive }) =>
                   cn(
-                    'flex flex-col items-center justify-center py-1 text-[10px] font-semibold transition-colors flex-1 min-w-0',
+                    'flex flex-col items-center justify-center py-1 text-2xs font-semibold transition-colors flex-1 min-w-0',
                     isActive ? 'text-brand' : 'text-ink-3 hover:text-brand',
                     item.locked && 'opacity-40 pointer-events-none'
                   )

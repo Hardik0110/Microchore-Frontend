@@ -6,7 +6,7 @@ import {
   useProjects,
   type TaskTone,
 } from '../../lib/store'
-import { cn, formatCurrency } from '../../lib/ui-utils'
+import { cn, formatCurrency, safeHref } from '../../lib/ui-utils'
 import { ChevronBackIcon, TONE_OPTIONS } from './shared'
 
 type TaskFormState = {
@@ -74,7 +74,7 @@ export function CompanyNewTaskPage() {
   if (!project) {
     return (
       <div className="flex flex-col gap-4">
-        <p className="text-[14px] text-ink-2">Project not found.</p>
+        <p className="text-sm text-ink-2">Project not found.</p>
         <Link to="/company/projects" className="text-brand transition-colors hover:text-brand-deep">
           Back to projects
         </Link>
@@ -87,7 +87,7 @@ export function CompanyNewTaskPage() {
       <div>
         <Link
           to={`/company/projects/${project.id}`}
-          className="inline-flex items-center gap-1.5 text-[12px] font-medium text-ink-3 transition-colors hover:text-brand"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-3 transition-colors hover:text-brand"
         >
           <ChevronBackIcon />
           {project.name}
@@ -103,19 +103,26 @@ export function CompanyNewTaskPage() {
 
       <Card className="flex flex-col gap-2 border-divider-warm bg-brand-soft">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-[12px] text-ink-2">Target post</span>
-          <a
-            href={project.targetUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="truncate text-[13px] text-brand max-w-[60%] hover:underline"
-          >
-            {project.targetUrl}
-          </a>
+          <span className="text-xs text-ink-2">Target post</span>
+          {(() => {
+            const targetHref = safeHref(project.targetUrl)
+            return targetHref ? (
+              <a
+                href={targetHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate text-sm text-brand max-w-[60%] hover:underline"
+              >
+                {project.targetUrl}
+              </a>
+            ) : (
+              <span className="truncate text-sm text-ink-3 max-w-[60%]">{project.targetUrl}</span>
+            )
+          })()}
         </div>
         <div className="flex items-center justify-between gap-3">
-          <span className="text-[12px] text-ink-2">Pay rate per approved</span>
-          <span className="text-[13px] text-ink font-medium">
+          <span className="text-xs text-ink-2">Pay rate per approved</span>
+          <span className="text-sm text-ink font-medium">
             {formatCurrency(project.payRate)}
           </span>
         </div>
@@ -146,7 +153,7 @@ export function CompanyNewTaskPage() {
                 value={form.tone}
                 onChange={(e) => set('tone', e.target.value as TaskTone)}
                 className={cn(
-                  'w-full rounded-md border border-divider bg-surface px-3.5 py-2.5 text-[14px] text-ink',
+                  'w-full rounded-md border border-divider bg-surface px-3.5 py-2.5 text-sm text-ink',
                   'focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20',
                 )}
               >
@@ -179,7 +186,7 @@ export function CompanyNewTaskPage() {
         </Card>
 
         {formError ? (
-          <p className="text-[13px] text-danger" role="alert">{formError}</p>
+          <p className="text-sm text-danger" role="alert">{formError}</p>
         ) : null}
 
         <div className="flex items-center justify-end gap-3">

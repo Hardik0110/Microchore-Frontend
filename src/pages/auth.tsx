@@ -3,8 +3,14 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
 import { AuthLayout } from '../components/layouts'
 import { Button, Field, Input, HeadlineWithAccent } from '../components/ui/primitives'
-import { useAuth } from '../lib/auth'
+import { useAuth, WIZARD_ROUTES } from '../lib/auth'
 import { ApiError } from '../lib/api'
+import type { WizardStep } from '../types/user'
+
+function safeWizardPath(step: WizardStep | undefined | null): string {
+  if (step && step in WIZARD_ROUTES) return WIZARD_ROUTES[step]
+  return '/onboarding/verify-email'
+}
 
 function isEmailExistsError(err: unknown): boolean {
   if (err instanceof ApiError && err.status === 400) {
@@ -74,7 +80,7 @@ export function SignupPage() {
     setSubmitting(true)
     try {
       const user = await googleSignIn(resp.credential)
-      navigate(user.wizardStep === 'done' ? '/app' : `/onboarding/${user.wizardStep}`)
+      navigate(user.wizardStep === 'done' ? '/app' : safeWizardPath(user.wizardStep))
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Google sign-in failed.')
       setSubmitting(false)
@@ -87,10 +93,10 @@ export function SignupPage() {
         as="h1"
         text="Real comments, paid by the post."
         accents={['paid']}
-        className="font-serif text-[36px] md:text-[40px] leading-[1.05] text-ink tracking-tighter"
+        className="font-serif text-4xl md:text-4xl leading-[1.05] text-ink tracking-tighter"
       />
-      <p className="mt-4 text-[14px] text-ink-2 leading-relaxed">
-        Encrypted in transit and at rest. No payment credentials stored. We don&rsquo;t sell your data.
+      <p className="mt-4 text-sm text-ink-2 leading-relaxed">
+        Encrypted in transit. No payment credentials stored. We don&rsquo;t sell your data.
       </p>
 
       <div className="mt-7 flex flex-col gap-3">
@@ -105,7 +111,7 @@ export function SignupPage() {
             width="400"
           />
         </div>
-        <div className="flex items-center gap-3 text-[11px] tracking-stamp uppercase text-ink-3 font-mono my-1">
+        <div className="flex items-center gap-3 text-xs tracking-stamp uppercase text-ink-3 font-mono my-1">
           <span className="flex-1 h-px bg-divider" />
           or
           <span className="flex-1 h-px bg-divider" />
@@ -133,14 +139,14 @@ export function SignupPage() {
               <path d="M12 8v4M12 16h.01" />
             </svg>
           </span>
-          <div className="flex flex-col gap-1 text-[13.5px] text-ink leading-snug">
+          <div className="flex flex-col gap-1 text-sm text-ink leading-snug">
             <p className="font-semibold">An account with this email already exists.</p>
             <p className="text-ink-2">
-              <span className="font-mono text-[12px]">{existingEmail}</span> is already registered. Sign in with that account, or use a different email to create a new one.
+              <span className="font-mono text-xs">{existingEmail}</span> is already registered. Sign in with that account, or use a different email to create a new one.
             </p>
             <Link
               to={`/login?email=${encodeURIComponent(existingEmail)}`}
-              className="mt-1 self-start rounded-md bg-brand px-3 py-1.5 text-[12.5px] font-medium text-white transition-colors hover:bg-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+              className="mt-1 self-start rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
             >
               Sign in instead
             </Link>
@@ -184,7 +190,7 @@ export function SignupPage() {
         </Field>
 
         {formError ? (
-          <p className="text-[13px] text-danger" role="alert">
+          <p className="text-sm text-danger" role="alert">
             {formError}
           </p>
         ) : null}
@@ -193,7 +199,7 @@ export function SignupPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-[13px] text-ink-2">
+      <p className="mt-6 text-sm text-ink-2">
         Already have an account?{' '}
         <Link to="/login" className="text-brand font-medium transition-colors hover:text-brand-deep">
           Sign in
@@ -224,7 +230,7 @@ export function LoginPage() {
     setSubmitting(true)
     try {
       const user = await login(email.trim(), password)
-      navigate(user.wizardStep === 'done' ? '/app' : `/onboarding/${user.wizardStep}`)
+      navigate(user.wizardStep === 'done' ? '/app' : safeWizardPath(user.wizardStep))
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Sign in failed.')
       setSubmitting(false)
@@ -240,7 +246,7 @@ export function LoginPage() {
     setSubmitting(true)
     try {
       const user = await googleSignIn(resp.credential)
-      navigate(user.wizardStep === 'done' ? '/app' : `/onboarding/${user.wizardStep}`)
+      navigate(user.wizardStep === 'done' ? '/app' : safeWizardPath(user.wizardStep))
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Google sign-in failed.')
       setSubmitting(false)
@@ -249,10 +255,10 @@ export function LoginPage() {
 
   return (
     <AuthLayout eyebrow="Welcome back">
-      <h1 className="font-serif text-[36px] md:text-[40px] leading-[1.05] text-ink tracking-tighter">
+      <h1 className="font-serif text-4xl md:text-4xl leading-[1.05] text-ink tracking-tighter">
         Sign in to <span className="signature">microchore</span>
       </h1>
-      <p className="mt-4 text-[14px] text-ink-2 leading-relaxed">
+      <p className="mt-4 text-sm text-ink-2 leading-relaxed">
         Pick up where you left off. Tasks, earnings, and payouts are all on the other side.
       </p>
 
@@ -268,7 +274,7 @@ export function LoginPage() {
             width="400"
           />
         </div>
-        <div className="flex items-center gap-3 text-[11px] tracking-stamp uppercase text-ink-3 font-mono my-1">
+        <div className="flex items-center gap-3 text-xs tracking-stamp uppercase text-ink-3 font-mono my-1">
           <span className="flex-1 h-px bg-divider" />
           or
           <span className="flex-1 h-px bg-divider" />
@@ -302,7 +308,7 @@ export function LoginPage() {
         </Field>
 
         {formError ? (
-          <p className="text-[13px] text-danger" role="alert">
+          <p className="text-sm text-danger" role="alert">
             {formError}
           </p>
         ) : null}
@@ -311,7 +317,7 @@ export function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-[13px] text-ink-2">
+      <p className="mt-6 text-sm text-ink-2">
         New here?{' '}
         <Link to="/signup" className="text-brand font-medium transition-colors hover:text-brand-deep">
           Create an account

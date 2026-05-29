@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Field, Input } from '../../components/ui/primitives'
 import { apiConfirmEmailVerify, apiRequestEmailVerify } from '../../lib/api'
 import { WIZARD_ROUTES, useAuth, wizardNext } from '../../lib/auth'
+import type { WizardStep } from '../../types/user'
 import { StepShell } from './shared'
 
 export function VerifyEmailStep() {
   const navigate = useNavigate()
-  const { user, updateUser, advanceWizard } = useAuth()
+  const { user, updateUser } = useAuth()
   const [code, setCode] = useState('')
   const [touched, setTouched] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -38,9 +39,9 @@ export function VerifyEmailStep() {
     setSubmitting(true)
     try {
       const fresh = await apiConfirmEmailVerify(code)
-      updateUser({ emailVerified: fresh.emailVerified, wizardStep: fresh.wizardStep })
-      const nextStep = user ? wizardNext(user.wizardStep) : 'welcome'
-      advanceWizard()
+      const serverStep: WizardStep = fresh.wizardStep
+      const nextStep = wizardNext(serverStep)
+      updateUser({ emailVerified: fresh.emailVerified, wizardStep: nextStep })
       navigate(WIZARD_ROUTES[nextStep])
     } catch (err) {
       setServerError(err instanceof Error ? err.message : 'Invalid or expired code.')
@@ -93,7 +94,7 @@ export function VerifyEmailStep() {
             onBlur={() => setTouched(true)}
             hasError={!!error}
             placeholder="000000"
-            className="font-mono tracking-[0.4em] text-center text-[22px] py-3"
+            className="font-mono tracking-[0.4em] text-center text-xl py-3"
           />
         </Field>
 
@@ -102,7 +103,7 @@ export function VerifyEmailStep() {
             type="button"
             onClick={handleResend}
             disabled={requesting}
-            className="text-[13px] text-brand transition-colors hover:text-brand-deep disabled:opacity-50"
+            className="text-sm text-brand transition-colors hover:text-brand-deep disabled:opacity-50"
           >
             {requesting ? 'Sending…' : 'Send another code'}
           </button>

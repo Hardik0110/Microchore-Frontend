@@ -102,14 +102,14 @@ function TutBriefMock() {
   return (
     <Card className="bg-bg p-5">
       <Eyebrow dot dotColor="accent">Brief preview</Eyebrow>
-      <div className="mt-3 text-[14px] text-ink leading-relaxed">
+      <div className="mt-3 text-sm text-ink leading-relaxed">
         Reply to <span className="font-mono">@yrw.brand_drop</span>. Keyword{' '}
         <span className="signature signature-underline">morning</span> should feel natural.
       </div>
       <div className="mt-4 flex items-center gap-3">
         <PlatformTag platform="instagram" />
         <RowTag label="14 left" tone="accent" />
-        <span className="ml-auto signature text-[18px] leading-none">$0.50</span>
+        <span className="ml-auto signature text-lg leading-none">$0.50</span>
       </div>
     </Card>
   )
@@ -119,10 +119,10 @@ function TutComposerMock() {
   return (
     <Card className="bg-bg">
       <Eyebrow>Composer preview</Eyebrow>
-      <div className="mt-3 rounded-md border border-divider bg-surface p-4 text-[13px] text-ink-2">
+      <div className="mt-3 rounded-md border border-divider bg-surface p-4 text-sm text-ink-2">
         Truly love this combo for a slow morning. The keyword fits without effort.
       </div>
-      <div className="mt-3 flex items-center justify-between text-[11px] font-mono tracking-stamp uppercase text-ink-3">
+      <div className="mt-3 flex items-center justify-between text-xs font-mono tracking-stamp uppercase text-ink-3">
         <span>Typed 86 chars &middot; Pasted 0</span>
         <span className="text-success">Looks like a person wrote this</span>
       </div>
@@ -134,7 +134,7 @@ function TutAttestMock() {
   return (
     <Card className="bg-bg flex flex-col gap-3">
       <Eyebrow>Submit checklist</Eyebrow>
-      <ul className="text-[13px] text-ink-2 flex flex-col gap-2">
+      <ul className="text-sm text-ink-2 flex flex-col gap-2">
         <li>1. Post the comment from your linked handle</li>
         <li>2. Paste the comment URL into Microchore</li>
         <li>3. Tick the &ldquo;my own voice&rdquo; attestation</li>
@@ -148,7 +148,7 @@ function TutReviewMock() {
     <Card className="bg-bg flex items-center justify-between">
       <div>
         <Eyebrow dot dotColor="info">In review</Eyebrow>
-        <div className="mt-1 text-[13px] text-ink">
+        <div className="mt-1 text-sm text-ink">
           Reviewed by the platform team, typically within 48h.
         </div>
       </div>
@@ -174,7 +174,7 @@ function Tile({ label, value, accent }: { label: string; value: string; accent?:
   return (
     <div className="rounded-md border border-divider bg-surface px-3 py-3 flex flex-col gap-1.5">
       <Eyebrow>{label}</Eyebrow>
-      <span className={cn('text-[18px] leading-none', accent ? 'signature' : 'text-ink font-medium')}>
+      <span className={cn('text-lg leading-none', accent ? 'signature' : 'text-ink font-medium')}>
         {value}
       </span>
     </div>

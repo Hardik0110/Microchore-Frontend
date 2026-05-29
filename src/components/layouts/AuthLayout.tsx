@@ -10,7 +10,7 @@ export function AuthLayout({ children, eyebrow }: { children: ReactNode; eyebrow
         <Link to="/" aria-label="microchore home" className="transition-opacity hover:opacity-80">
           <Logo className="h-8 w-auto" />
         </Link>
-        <Link to="/" className="text-[13px] text-ink-3 transition-colors hover:text-brand">
+        <Link to="/" className="text-sm text-ink-3 transition-colors hover:text-brand">
           Back home
         </Link>
       </header>

@@ -81,7 +81,7 @@ export function DashboardPage() {
     ? `/app/tasks/${nextStarter.id}`
     : realTasksUnlocked
     ? '/app/marketplace'
-    : '/app'
+    : null
   const stripCtaLabel = nextStarter
     ? 'Continue practice'
     : realTasksUnlocked
@@ -109,7 +109,7 @@ export function DashboardPage() {
               <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
             </svg>
           </span>
-          <p className="text-[13.5px] text-ink truncate">
+          <p className="text-sm text-ink truncate">
             <span className="font-bold">{displayName}</span> ·{' '}
             <span className="font-bold">
               {totalSubmittedStarter} of {starterTasks.length}
@@ -120,26 +120,35 @@ export function DashboardPage() {
             </span>
           </p>
         </div>
-        <Link
-          to={stripCtaTo}
-          className="group inline-flex items-center gap-1.5 rounded-md px-2 py-1 -mx-2 -my-1 text-[13px] font-medium text-ink transition-colors hover:bg-surface/60 whitespace-nowrap shrink-0 relative"
-        >
-          {stripCtaLabel}
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-            className="transition-transform group-hover:translate-x-0.5"
+        {stripCtaTo ? (
+          <Link
+            to={stripCtaTo}
+            className="group inline-flex items-center gap-1.5 rounded-md px-2 py-1 -mx-2 -my-1 text-sm font-medium text-ink transition-colors hover:bg-surface/60 whitespace-nowrap shrink-0 relative"
           >
-            <path d="M5 12h14M13 5l7 7-7 7" />
-          </svg>
-        </Link>
+            {stripCtaLabel}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="transition-transform group-hover:translate-x-0.5"
+            >
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </Link>
+        ) : (
+          <span
+            aria-disabled="true"
+            className="inline-flex items-center gap-1.5 px-2 py-1 -mx-2 -my-1 text-sm font-medium text-ink-3 whitespace-nowrap shrink-0 relative"
+          >
+            {stripCtaLabel}
+          </span>
+        )}
       </div>
 
       <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -172,12 +181,12 @@ export function DashboardPage() {
                 initial={{ scale: 0.6, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', bounce: 0.6, duration: 0.5 }}
-                className="font-mono text-[20px] font-bold tabular-nums text-ink leading-none"
+                className="font-mono text-xl font-bold tabular-nums text-ink leading-none"
               >
                 {streak}
               </motion.span>
-              <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
-                {streak === 1 ? 'day streak' : 'day streak'}
+              <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
+                {streak === 1 ? 'day streak' : 'days streak'}
               </span>
             </div>
           </div>
@@ -186,21 +195,19 @@ export function DashboardPage() {
 
       {accountOnHold ? (
         <Card className="border-l-4 border-l-danger">
-          <div className="flex items-start justify-between gap-6 flex-wrap">
-            <div className="flex flex-col gap-2 max-w-2xl">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-danger">
-                Held
-              </p>
-              <h3 className="text-[18px] font-bold text-ink leading-snug">
-                Three of your five practice tasks did not pass.
-              </h3>
-              <p className="text-[13.5px] text-ink-2 leading-relaxed">
-                Real tasks stay locked while we look at this together. Write us a short note, and
-                we will read it inside a day.
-              </p>
-              <div className="mt-2">
-                <Button variant="ghost" size="sm">Open appeal</Button>
-              </div>
+          <div className="flex flex-col gap-2 max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-danger">
+              Held
+            </p>
+            <h3 className="text-lg font-bold text-ink leading-snug">
+              Three of your five practice tasks did not pass.
+            </h3>
+            <p className="text-sm text-ink-2 leading-relaxed">
+              Real tasks stay locked while we look at this together. Write us a short note, and
+              we will read it inside a day.
+            </p>
+            <div className="mt-2">
+              <Button variant="ghost" size="sm">Open appeal</Button>
             </div>
           </div>
         </Card>
@@ -287,16 +294,16 @@ export function DashboardPage() {
                 return (
                   <li
                     key={s.id}
-                    className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-bg-2/60"
+                    className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-bg/60"
                   >
-                    <div className="w-16 shrink-0 font-mono text-[11px] tracking-stamp uppercase text-ink-3">
+                    <div className="w-16 shrink-0 font-mono text-xs tracking-stamp uppercase text-ink-3">
                       {date}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-medium text-ink truncate">
+                      <div className="text-sm font-medium text-ink truncate">
                         {s.taskTitle}
                       </div>
-                      <div className="font-mono text-[10px] tracking-stamp uppercase text-ink-3 mt-0.5">
+                      <div className="font-mono text-2xs tracking-stamp uppercase text-ink-3 mt-0.5">
                         {s.isStarter ? 'Practice · reviewed' : 'Real · YRW reviewed'}
                         <span className="mx-1.5 opacity-40">·</span>
                         #{s.id.slice(0, 6).toUpperCase()}
@@ -304,11 +311,11 @@ export function DashboardPage() {
                     </div>
                     <div className="shrink-0">
                       {s.isStarter ? (
-                        <span className="font-mono text-[13px] tracking-stamp uppercase text-ink-2">
+                        <span className="font-mono text-sm tracking-stamp uppercase text-ink-2">
                           {s.rating ? `${s.rating}/5` : 'Approved'}
                         </span>
                       ) : (
-                        <span className="font-mono text-[14px] tracking-tight text-ink font-semibold">
+                        <span className="font-mono text-sm tracking-tight text-ink font-semibold">
                           +{formatCurrency(earned)}
                         </span>
                       )}
@@ -337,7 +344,7 @@ function StarterRunSection({
   submittedAll: boolean
   reviewedAll: boolean
 }) {
-  const submittedSet = new Set(submissions.map((s) => s.taskId))
+  const submittedSet = new Set(submissions.map((s) => String(s.taskId)))
   const totalSubmitted = tasks.filter((t) => submittedSet.has(String(t.id))).length
 
   return (
@@ -345,8 +352,8 @@ function StarterRunSection({
       title={`Practice · ${totalSubmitted}/${tasks.length}`}
     >
       <ul className="divide-y divide-divider">
-        {tasks.map((t) => {
-          const sub = submissions.find((s) => s.taskId === t.id)
+        {tasks.map((t, i) => {
+          const sub = submissions.find((s) => String(s.taskId) === String(t.id))
           const status: 'pending' | 'approved' | 'rejected' | 'not-submitted' = sub
             ? sub.status
             : 'not-submitted'
@@ -356,15 +363,15 @@ function StarterRunSection({
               key={t.id}
               className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-bg/60"
             >
-              <span className="font-mono text-[11px] font-bold text-brand tabular-nums w-6 shrink-0">
-                0{t.starterIndex}
+              <span className="font-mono text-xs font-bold text-brand tabular-nums w-6 shrink-0">
+                {String(i + 1).padStart(2, '0')}
               </span>
               <Glyph size={16} className="text-ink-3 shrink-0" />
               <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-[13.5px] font-medium text-ink truncate">
+                <span className="text-sm font-medium text-ink truncate">
                   {toneLabel(t.tone)} brief
                 </span>
-                <span className="text-[12px] text-ink-3 truncate">
+                <span className="text-xs text-ink-3 truncate">
                   {t.brief.split('.')[0]}.
                 </span>
               </div>
@@ -388,7 +395,7 @@ function StarterRunSection({
 
       {submittedAll && !reviewedAll ? (
         <div className="border-t border-divider px-5 py-4 bg-info-soft/40">
-          <p className="text-[12.5px] text-ink-2 leading-relaxed">
+          <p className="text-xs text-ink-2 leading-relaxed">
             <span className="font-semibold text-brand">All 5 submitted. </span>
             Reviewed by hand, typically inside 48 hours.
           </p>
@@ -417,13 +424,13 @@ function TaskRow({
           <PlatformTag platform={task.platform} />
           {task.hot ? <RowTag label="Hot" tone="danger" /> : null}
         </div>
-        <span className="text-[13.5px] font-medium text-ink truncate">
+        <span className="text-sm font-medium text-ink truncate">
           Comment on {task.targetHandle}
         </span>
-        <span className="text-[12px] text-ink-3 truncate">{task.brief}</span>
+        <span className="text-xs text-ink-3 truncate">{task.brief}</span>
       </div>
       <div className="flex flex-col items-end gap-1 shrink-0">
-        <span className="font-mono text-[15px] font-bold text-brand tabular-nums">
+        <span className="font-mono text-base font-bold text-brand tabular-nums">
           {formatCurrency(task.payRate)}
         </span>
         {locked ? (

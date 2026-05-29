@@ -9,6 +9,7 @@ import {
   apiSignup,
   clearTokens,
   getAccessToken,
+  subscribeSessionExpired,
 } from './api'
 import { resetMockData } from './store'
 
@@ -44,7 +45,8 @@ export function wizardStepIndex(step: WizardStep) {
 
 export function wizardNext(step: WizardStep): WizardStep {
   const idx = WIZARD_ORDER.indexOf(step)
-  if (idx < 0 || idx >= WIZARD_ORDER.length - 1) return 'done'
+  if (idx < 0) return 'verify-email'
+  if (idx >= WIZARD_ORDER.length - 1) return 'done'
   return WIZARD_ORDER[idx + 1]
 }
 
@@ -148,6 +150,14 @@ export function useAuthProvider(): AuthContextValue {
     }
   }, [])
 
+  useEffect(() => {
+    return subscribeSessionExpired(() => {
+      userRef.current = null
+      setUser(null)
+      setSyncError('Your session expired. Please sign in again.')
+    })
+  }, [])
+
   const commit = useCallback((next: User | null) => {
     userRef.current = next
     setUser(next)
@@ -177,12 +187,23 @@ export function useAuthProvider(): AuthContextValue {
   }, [commit])
 
   const logout = useCallback(async () => {
-    const blacklistTask = apiLogout().catch(() => undefined)
+    let blacklistError: unknown = null
+    try {
+      await apiLogout()
+    } catch (err) {
+      blacklistError = err
+    }
     clearTokens()
     resetMockData()
     setSyncError(null)
     commit(null)
-    await blacklistTask
+    if (blacklistError) {
+      const message =
+        blacklistError instanceof Error
+          ? blacklistError.message
+          : 'Could not invalidate the previous session on the server.'
+      setSyncError(message)
+    }
   }, [commit])
 
   const updateUser = useCallback(

@@ -4,7 +4,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import { AppLayout, CompanyLayout, OnboardingLayout } from './components/layouts'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { ApiLoader } from './components/ApiLoader'
-import { AuthContext, useAuthProvider } from './lib/auth'
+import { AuthContext, useAuth, useAuthProvider } from './lib/auth'
 
 const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ?? ''
 if (!GOOGLE_CLIENT_ID) {
@@ -53,6 +53,8 @@ const CompanyProjectsListPage = lazy(() => import('./pages/company').then((m) =>
 
 const AdminUsersPage = lazy(() => import('./pages/admin').then((m) => ({ default: m.AdminUsersPage })))
 
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+
 function AuthProvider({ children }: { children: ReactNode }) {
   const value = useAuthProvider()
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
@@ -67,6 +69,18 @@ function RouteFallback() {
       />
     </div>
   )
+}
+
+// FE-003: route-level role guard. The guarded child routes only mount once the
+// user is hydrated AND authorized, so a privileged page never renders (and its
+// data effects never fire) for an unauthorized user. Real enforcement is still
+// the backend; this prevents the page from mounting client-side.
+function RequireRole({ roles }: { roles: string[] }) {
+  const { user, isHydrating } = useAuth()
+  if (isHydrating) return <RouteFallback />
+  if (!user) return <Navigate to="/login" replace />
+  if (!user.role || !roles.includes(user.role)) return <Navigate to="/app" replace />
+  return <Outlet />
 }
 
 export default function App() {
@@ -113,9 +127,11 @@ export default function App() {
               <Route path="projects/:id/tasks/new" element={<CompanyNewTaskPage />} />
             </Route>
 
-            <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route element={<RequireRole roles={['PLATFORM_ADMIN']} />}>
+              <Route path="/admin/users" element={<AdminUsersPage />} />
+            </Route>
 
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>

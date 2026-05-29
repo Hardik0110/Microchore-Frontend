@@ -10,7 +10,7 @@ export function ApiLoader() {
     <>
       <style>{`@keyframes microchoreApiLoaderSweep{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}`}</style>
       <div
-        className="fixed top-0 left-0 right-0 z-[60] h-[3px] overflow-hidden bg-grey-soft/70 pointer-events-none"
+        className="fixed top-0 left-0 right-0 z-[60] h-[3px] overflow-hidden bg-ghost-soft/70 pointer-events-none"
         role="status"
         aria-live="polite"
         aria-label="Loading"

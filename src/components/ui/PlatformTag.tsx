@@ -95,7 +95,7 @@ export function PlatformTag({ platform, size = 14, className, label }: PlatformT
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 font-mono text-[10px] tracking-stamp uppercase text-ink-3',
+        'inline-flex items-center gap-1.5 font-mono text-2xs tracking-stamp uppercase text-ink-3',
         className
       )}
     >

@@ -9,7 +9,7 @@ import {
   type RefObject,
 } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { cn, formatCurrency, formatRelative } from '../../lib/ui-utils'
+import { cn, formatCurrency, formatRelative, safeInternalPath } from '../../lib/ui-utils'
 import { type WizardStep } from '../../lib/auth'
 import { useTheme } from '../../lib/theme'
 import { useEarnings, useNotifications, useSubmissions, useTasks, type Notification } from '../../lib/store'
@@ -105,12 +105,7 @@ export const COMPANY_NAV_SECTIONS: NavSection[] = [
     label: 'Manage',
     items: [
       { path: '/company/projects', label: 'Projects', icon: MarketplaceIcon },
-      { path: '/company/submissions', label: 'Submissions', icon: FeedbackIcon },
     ],
-  },
-  {
-    label: 'Account',
-    items: [{ path: '/company/settings', label: 'Settings', icon: SettingsIcon }],
   },
 ]
 
@@ -280,9 +275,10 @@ export function HeaderNotifications() {
       if (!n.isRead) {
         try { await markRead(n.id) } catch { void 0 }
       }
-      if (n.link) {
+      const safePath = safeInternalPath(n.link)
+      if (safePath) {
         setOpen(false)
-        navigate(n.link)
+        navigate(safePath)
       }
     },
     [markRead, navigate],
@@ -312,7 +308,7 @@ export function HeaderNotifications() {
         {hasUnread ? (
           <span
             className={cn(
-              'absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 inline-flex items-center justify-center rounded-full text-white text-[10px] font-bold leading-none ring-2 ring-bg',
+              'absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 inline-flex items-center justify-center rounded-full text-white text-2xs font-bold leading-none ring-2 ring-bg',
               badgeBg,
               urgency === 'danger' && 'animate-pulse',
             )}
@@ -330,14 +326,14 @@ export function HeaderNotifications() {
           className="absolute right-0 top-[calc(100%+10px)] w-[340px] max-h-[420px] flex flex-col rounded-lg border border-divider bg-surface shadow-[0_18px_44px_-24px_rgba(0,0,0,0.18)] z-30"
         >
           <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-divider">
-            <span className="font-mono text-[10px] tracking-stamp uppercase text-brand">
+            <span className="font-mono text-2xs tracking-stamp uppercase text-brand">
               Notifications
             </span>
             {hasUnread ? (
               <button
                 type="button"
                 onClick={onMarkAll}
-                className="text-[11px] font-medium text-brand hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 rounded-sm px-1"
+                className="text-xs font-medium text-brand hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 rounded-sm px-1"
               >
                 Mark all read
               </button>
@@ -362,7 +358,7 @@ export function HeaderNotifications() {
                   <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
                 </svg>
               </span>
-              <p className="text-[13px] text-ink-2 leading-snug">You are all caught up.</p>
+              <p className="text-sm text-ink-2 leading-snug">You are all caught up.</p>
             </div>
           ) : (
             <ul className="flex-1 overflow-y-auto divide-y divide-divider">
@@ -384,13 +380,13 @@ export function HeaderNotifications() {
                         <span className="mt-1.5 h-2 w-2 shrink-0" aria-hidden />
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className={cn('text-[13px] leading-snug', n.isRead ? 'text-ink-2' : 'text-ink font-medium')}>
+                        <p className={cn('text-sm leading-snug', n.isRead ? 'text-ink-2' : 'text-ink font-medium')}>
                           {n.title}
                         </p>
                         {n.body ? (
-                          <p className="mt-0.5 text-[12px] text-ink-3 leading-snug">{n.body}</p>
+                          <p className="mt-0.5 text-xs text-ink-3 leading-snug">{n.body}</p>
                         ) : null}
-                        <p className="mt-1 font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+                        <p className="mt-1 font-mono text-2xs tracking-stamp uppercase text-ink-3">
                           {formatRelative(n.createdAt)}
                         </p>
                       </div>
@@ -424,10 +420,10 @@ export function AppHeaderStats() {
   const rating = earnings.averageRating ? earnings.averageRating.toFixed(2) : '·'
 
   return (
-    <div className="flex items-center gap-5 font-mono text-[10px] tracking-stamp uppercase text-ink-3 tabular-nums">
+    <div className="flex items-center gap-5 font-mono text-2xs tracking-stamp uppercase text-ink-3 tabular-nums">
       <span>
         <span className="text-ink-3">Earned</span>{' '}
-        <span className="text-ink not-mono">{formatCurrency(earnings.totalEarned)}</span>
+        <span className="text-ink font-sans">{formatCurrency(earnings.totalEarned)}</span>
       </span>
       <span className="text-ink-3/40">·</span>
       <span>
@@ -482,7 +478,7 @@ export function AppNavLink({
       onBlur={stopIcon}
       className={({ isActive }) =>
         cn(
-          'group relative flex items-center rounded-md text-[14px] transition-colors',
+          'group relative flex items-center rounded-md text-sm transition-colors',
           expanded ? 'gap-2.5 px-3 py-2' : 'justify-center w-10 h-10 mx-auto',
           isActive
             ? 'bg-brand-soft text-brand font-medium'

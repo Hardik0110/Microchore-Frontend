@@ -6,8 +6,6 @@ import { SIDEBAR_STORAGE_KEY } from '../../constants/storage'
 import { Logo } from '../ui/Logo'
 import { LayoutGridIcon as DashboardIcon } from '../ui/layout-grid'
 import { CartIcon as MarketplaceIcon } from '../ui/cart'
-import { MessageSquareIcon as FeedbackIcon } from '../ui/message-square'
-import { SettingsIcon } from '../ui/settings'
 import {
   AppNavLink,
   ChevronLeftSvg,
@@ -49,11 +47,16 @@ export function CompanyLayout() {
     if (isHydrating) return
     if (!user) {
       navigate('/login', { replace: true })
+      return
+    }
+    if (user.role !== 'COMPANY_ADMIN' && user.role !== 'PLATFORM_ADMIN') {
+      navigate('/app', { replace: true })
     }
   }, [user, isHydrating, navigate])
 
   if (isHydrating) return null
   if (!user) return null
+  if (user.role !== 'COMPANY_ADMIN' && user.role !== 'PLATFORM_ADMIN') return null
 
   const initial = userInitial(user.email)
   const displayName = user.linkedAccount?.handle ?? user.email.split('@')[0]
@@ -99,7 +102,7 @@ export function CompanyLayout() {
               >
                 <Logo className="h-8 w-auto" />
               </Link>
-              <span className="shrink-0 rounded-full bg-brand-soft text-brand px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+              <span className="shrink-0 rounded-full bg-brand-soft text-brand px-2 py-0.5 text-2xs font-bold uppercase tracking-wider">
                 Company
               </span>
             </div>
@@ -113,7 +116,7 @@ export function CompanyLayout() {
                 <div className={cn('mb-3 border-t border-divider mx-2', !collapsed && 'mb-4')} />
               ) : null}
               {!collapsed ? (
-                <p className="mb-2 px-3 text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-3">
+                <p className="mb-2 px-3 text-2xs font-bold uppercase tracking-[0.1em] text-ink-3">
                   {section.label}
                 </p>
               ) : null}
@@ -151,7 +154,7 @@ export function CompanyLayout() {
             )}
           >
             <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-400 text-[13px] font-bold text-white"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-400 text-sm font-bold text-white"
               aria-hidden
               title={collapsed ? displayName : undefined}
             >
@@ -159,9 +162,9 @@ export function CompanyLayout() {
             </div>
             {!collapsed ? (
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13.5px] font-medium text-ink">{displayName}</p>
+                <p className="truncate text-sm font-medium text-ink">{displayName}</p>
                 {user.email ? (
-                  <p className="truncate text-[11.5px] text-ink-3 mt-0.5">{user.email}</p>
+                  <p className="truncate text-xs text-ink-3 mt-0.5">{user.email}</p>
                 ) : null}
               </div>
             ) : null}
@@ -193,7 +196,7 @@ export function CompanyLayout() {
         <header className="md:hidden shrink-0 h-[60px] flex items-center justify-between px-4 border-b border-divider bg-surface">
           <Link to="/company" aria-label="microchore company home" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <Logo className="h-8 w-auto" />
-            <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+            <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
               · Company
             </span>
           </Link>
@@ -214,8 +217,6 @@ export function CompanyLayout() {
           {[
             { path: '/company', label: 'Dashboard', icon: DashboardIcon, end: true },
             { path: '/company/projects', label: 'Projects', icon: MarketplaceIcon },
-            { path: '/company/submissions', label: 'Reviews', icon: FeedbackIcon },
-            { path: '/company/settings', label: 'Settings', icon: SettingsIcon },
           ].map((item) => {
             const Icon = item.icon
             return (
@@ -225,7 +226,7 @@ export function CompanyLayout() {
                 end={item.end}
                 className={({ isActive }) =>
                   cn(
-                    'flex flex-col items-center justify-center py-1 text-[10px] font-semibold transition-colors flex-1 min-w-0',
+                    'flex flex-col items-center justify-center py-1 text-2xs font-semibold transition-colors flex-1 min-w-0',
                     isActive ? 'text-brand' : 'text-ink-3 hover:text-brand'
                   )
                 }

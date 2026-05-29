@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   ApiError,
   apiCreateReview,
@@ -6,6 +6,7 @@ import {
   type ReviewerQueueItem,
 } from '../../lib/api'
 import { Card } from '../../components/ui/primitives'
+import { safeHref } from '../../lib/ui-utils'
 
 type Rating = 1 | 2 | 3 | 4 | 5
 
@@ -21,38 +22,51 @@ export function ReviewerQueuePage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [startedAt, setStartedAt] = useState<number>(() => Date.now())
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false)
 
-  useEffect(() => {
-    let cancelled = false
+  const loadQueue = useCallback(() => {
     setLoading(true)
-    apiGetReviewerQueue(20)
+    return apiGetReviewerQueue(20)
       .then((rows) => {
-        if (cancelled) return
         setQueue(rows)
         setLoading(false)
+        setHasFetchedOnce(true)
       })
       .catch((err: unknown) => {
-        if (cancelled) return
         setLoading(false)
+        setHasFetchedOnce(true)
         if (err instanceof ApiError && err.status === 403) {
           setAccessError('You are not a reviewer. Ask an admin to grant reviewer status.')
         } else {
           setAccessError(err instanceof Error ? err.message : 'Could not load the queue.')
         }
       })
-    return () => {
-      cancelled = true
-    }
   }, [])
 
+  useEffect(() => {
+    loadQueue()
+  }, [loadQueue])
+
   const current = queue[0]
+
+  useEffect(() => {
+    if (!current) return
+    setStartedAt(Date.now())
+  }, [current?.id])
+
+  useEffect(() => {
+    if (!hasFetchedOnce) return
+    if (queue.length > 0) return
+    if (accessError) return
+    if (loading) return
+    loadQueue()
+  }, [queue.length, hasFetchedOnce, accessError, loading, loadQueue])
 
   function resetForm() {
     setRating(null)
     setJustification('')
     setFeelsAi(false)
     setSubmitError(null)
-    setStartedAt(Date.now())
   }
 
   async function handleSubmit() {
@@ -107,16 +121,23 @@ export function ReviewerQueuePage() {
               <span className="rounded-full bg-brand-50 text-brand-700 px-2.5 py-1 font-medium">
                 {current.taskTitle}
               </span>
-              <span className="rounded-full bg-grey-soft text-ink-2 px-2.5 py-1">
+              <span className="rounded-full bg-ghost-soft text-ink-2 px-2.5 py-1">
                 tone: {current.taskTone}
               </span>
               <span className="text-ink-3">@{current.commentAccountHandle}</span>
             </div>
 
             <Field label="Target post">
-              <a href={current.targetUrl || '#'} target="_blank" rel="noopener noreferrer" className="text-sm text-brand hover:underline break-all">
-                {current.targetUrl || '(no target)'}
-              </a>
+              {(() => {
+                const href = safeHref(current.targetUrl)
+                return href ? (
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm text-brand hover:underline break-all">
+                    {current.targetUrl}
+                  </a>
+                ) : (
+                  <span className="text-sm text-ink-3 break-all">{current.targetUrl || '(no target)'}</span>
+                )
+              })()}
             </Field>
 
             <Field label="Keyword required">
@@ -130,12 +151,19 @@ export function ReviewerQueuePage() {
             </Field>
 
             <Field label="Comment URL">
-              <a href={current.commentUrl || '#'} target="_blank" rel="noopener noreferrer" className="text-sm text-brand hover:underline break-all">
-                {current.commentUrl || '(none)'}
-              </a>
+              {(() => {
+                const href = safeHref(current.commentUrl)
+                return href ? (
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm text-brand hover:underline break-all">
+                    {current.commentUrl}
+                  </a>
+                ) : (
+                  <span className="text-sm text-ink-3 break-all">{current.commentUrl || '(none)'}</span>
+                )
+              })()}
             </Field>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-ink-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-ink-3">
               <Stat label="Elapsed (s)" value={String(current.elapsedSec)} />
               <Stat label="Pastes" value={String(current.pasteCount)} />
               <Stat label="Chars typed" value={String(current.charsTyped)} />
@@ -185,7 +213,7 @@ export function ReviewerQueuePage() {
                 className="rounded-md border border-divider bg-surface p-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand"
                 placeholder="Explain the rating in plain language. What worked, what didn't, why."
               />
-              <p className="text-[11px] text-ink-3 text-right">{justification.trim().length}/30</p>
+              <p className="text-xs text-ink-3 text-right">{justification.trim().length}/30</p>
             </div>
 
             {submitError ? <p className="text-sm text-danger" role="alert">{submitError}</p> : null}
@@ -208,9 +236,9 @@ export function ReviewerQueuePage() {
 function Header({ remaining }: { remaining: number }) {
   return (
     <div className="flex flex-col gap-1">
-      <p className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">Reviewer queue</p>
+      <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Reviewer queue</p>
       <h1 className="font-serif text-3xl text-ink tracking-tighter">Grade one submission at a time.</h1>
-      <p className="text-[13px] text-ink-3">
+      <p className="text-sm text-ink-3">
         {remaining > 0
           ? `${remaining} submission${remaining === 1 ? '' : 's'} in your queue.`
           : 'Three independent reviews finalize each task.'}
@@ -230,7 +258,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md bg-grey-soft/40 px-3 py-2 flex flex-col">
+    <div className="rounded-md bg-ghost-soft/40 px-3 py-2 flex flex-col">
       <span className="text-ink-3 uppercase tracking-wide">{label}</span>
       <span className="text-ink font-medium text-sm">{value}</span>
     </div>

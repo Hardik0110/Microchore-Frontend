@@ -32,17 +32,23 @@ type StampProps = {
 }
 
 export function Stamp({ tone, children, className, rotateDeg, animateIn = false }: StampProps) {
+  const label = children ?? defaultLabels[tone]
   const rotation = useMemo(() => {
     if (typeof rotateDeg === 'number') return rotateDeg
-    return -2.5 + (Math.random() * 5 - 2.5)
-  }, [rotateDeg])
+    const seed = `${tone}:${typeof label === 'string' ? label : ''}`
+    let h = 2166136261
+    for (let i = 0; i < seed.length; i++) {
+      h ^= seed.charCodeAt(i)
+      h = (h * 16777619) >>> 0
+    }
+    return ((h % 1000) / 1000) * 5 - 2.5
+  }, [rotateDeg, tone, label])
 
   const baseClass = cn(
-    'inline-block border-[1.5px] rounded-[4px] px-2.5 py-1 font-mono text-[11px] font-semibold tracking-stamp uppercase',
+    'inline-block border-[1.5px] rounded-[4px] px-2.5 py-1 font-mono text-xs font-semibold tracking-stamp uppercase',
     toneClasses[tone],
     className,
   )
-  const label = children ?? defaultLabels[tone]
 
   if (!animateIn) {
     return (

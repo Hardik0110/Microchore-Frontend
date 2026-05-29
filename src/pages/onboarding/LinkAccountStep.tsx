@@ -1,13 +1,12 @@
 import {
   useEffect,
-  useMemo,
   useState,
   type ReactElement,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
 import { apiLinkYouTube, apiTwitterStartLink } from '../../lib/api'
-import { Button, Card, Eyebrow, Field, Input } from '../../components/ui/primitives'
+import { Button, Card, Eyebrow } from '../../components/ui/primitives'
 import {
   InstagramIcon,
   TikTokIcon,
@@ -35,21 +34,6 @@ const PLATFORM_ICONS: Record<Platform, (p: { size?: number; className?: string }
   x: XIcon,
 }
 
-function deriveVerifyCode(seed: string) {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-  let h = 2166136261
-  for (let i = 0; i < seed.length; i++) {
-    h ^= seed.charCodeAt(i)
-    h = (h * 16777619) >>> 0
-  }
-  let out = ''
-  for (let i = 0; i < 6; i++) {
-    out += alphabet[h % alphabet.length]
-    h = (h * 31 + 7) >>> 0
-  }
-  return `${out.slice(0, 3)}-${out.slice(3)}`
-}
-
 export function LinkAccountStep() {
   const navigate = useNavigate()
   const { user, updateUser, advanceWizard, refreshUser } = useAuth()
@@ -58,9 +42,8 @@ export function LinkAccountStep() {
       const params = new URLSearchParams(window.location.search)
       if (params.get('twitter')) return 'x'
     }
-    return user?.linkedAccount?.platform ?? 'instagram'
+    return user?.linkedAccount?.platform ?? 'youtube'
   })
-  const [handle, setHandle] = useState('')
   const [verifying, setVerifying] = useState(false)
   const [twitterPending, setTwitterPending] = useState(false)
   const [oauthError, setOauthError] = useState<string | null>(() => {
@@ -91,7 +74,30 @@ export function LinkAccountStep() {
     setTwitterPending(true)
     try {
       const { authorize_url } = await apiTwitterStartLink()
-      window.location.href = authorize_url
+      let parsed: URL
+      try {
+        parsed = new URL(authorize_url)
+      } catch {
+        setOauthError('Twitter returned an invalid sign-in URL.')
+        setTwitterPending(false)
+        return
+      }
+      const allowedHosts = new Set([
+        'twitter.com',
+        'www.twitter.com',
+        'mobile.twitter.com',
+        'x.com',
+        'www.x.com',
+        'mobile.x.com',
+        'api.twitter.com',
+        'api.x.com',
+      ])
+      if (parsed.protocol !== 'https:' || !allowedHosts.has(parsed.hostname.toLowerCase())) {
+        setOauthError('Twitter returned an unexpected sign-in URL.')
+        setTwitterPending(false)
+        return
+      }
+      window.location.href = parsed.href
     } catch (err) {
       setOauthError(err instanceof Error ? err.message : 'Could not start Twitter sign-in.')
       setTwitterPending(false)
@@ -99,7 +105,6 @@ export function LinkAccountStep() {
   }
 
   const thresholds = PLATFORM_THRESHOLDS[platform]
-  const verifyCode = useMemo(() => deriveVerifyCode(String(user?.id ?? 'guest')), [user?.id])
 
   const connectYouTube = useGoogleLogin({
     scope: 'https://www.googleapis.com/auth/youtube.readonly',
@@ -123,13 +128,6 @@ export function LinkAccountStep() {
     },
     onError: () => setOauthError('Google sign-in was cancelled or failed.'),
   })
-
-  async function handleVerify() {
-    setOauthError(
-      `${PLATFORM_THRESHOLDS[platform].name} handle verification is being moved server-side. ` +
-        'Link via YouTube or Twitter to continue.',
-    )
-  }
 
   function handleContinue() {
     if (!result?.passesCredibility) return
@@ -213,14 +211,14 @@ export function LinkAccountStep() {
                 />
                 <span
                   className={cn(
-                    'font-mono text-[10px] tracking-stamp uppercase',
+                    'font-mono text-2xs tracking-stamp uppercase',
                     isLinked ? 'text-success' : 'text-ink-3',
                   )}
                 >
                   {cfg.name}
                 </span>
               </div>
-              <div className="text-[11.5px] text-ink-2 leading-snug">
+              <div className="text-xs text-ink-2 leading-snug">
                 {p === 'instagram' ? (
                   <>
                     <div>{cfg.followers}+ followers</div>
@@ -241,12 +239,12 @@ export function LinkAccountStep() {
           <Card>
             <div className="flex flex-col gap-3">
               <Eyebrow>Link your YouTube channel</Eyebrow>
-              <p className="text-[13px] text-ink-2 leading-relaxed">
+              <p className="text-sm text-ink-2 leading-relaxed">
                 Sign in with Google and grant read-only access to your YouTube channel. We read your
                 channel name, subscriber count, video count, and channel age. Nothing else.
               </p>
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+                <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
                   YouTube Data API · read-only
                 </span>
                 <Button
@@ -258,7 +256,7 @@ export function LinkAccountStep() {
                 </Button>
               </div>
               {oauthError ? (
-                <p className="text-[12px] text-danger" role="alert">
+                <p className="text-xs text-danger" role="alert">
                   {oauthError}
                 </p>
               ) : null}
@@ -270,12 +268,12 @@ export function LinkAccountStep() {
           <Card>
             <div className="flex flex-col gap-3">
               <Eyebrow>Link your Twitter account</Eyebrow>
-              <p className="text-[13px] text-ink-2 leading-relaxed">
+              <p className="text-sm text-ink-2 leading-relaxed">
                 Sign in with Twitter and grant read-only access. We read your handle, follower
                 count, tweet count, and account age. Nothing else.
               </p>
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+                <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
                   Twitter OAuth 2.0 · read-only
                 </span>
                 <Button
@@ -287,7 +285,7 @@ export function LinkAccountStep() {
                 </Button>
               </div>
               {oauthError ? (
-                <p className="text-[12px] text-danger" role="alert">
+                <p className="text-xs text-danger" role="alert">
                   {oauthError}
                 </p>
               ) : null}
@@ -296,27 +294,27 @@ export function LinkAccountStep() {
         )
       ) : (
         <Card>
-          <Field
-            htmlFor="handle"
-            label={`Your ${thresholds.name} handle`}
-            required
-            helper="We will scrape your bio to confirm ownership. Code expires in 10 minutes."
-          >
-            <Input
-              id="handle"
-              value={handle}
-              onChange={(e) => setHandle(e.target.value)}
-              placeholder="@your.handle"
-              autoComplete="off"
-            />
-          </Field>
-          <div className="mt-4 flex items-center justify-between">
-            <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
-              Code: <span className="text-ink">{verifyCode}</span>
-            </span>
-            <Button onClick={handleVerify} disabled={!handle || verifying} variant="ghost">
-              {verifying ? 'Verifying...' : 'Verify ownership'}
-            </Button>
+          <div className="flex flex-col gap-3">
+            <Eyebrow>{thresholds.name} linking is coming soon</Eyebrow>
+            <p className="text-sm text-ink-2 leading-relaxed">
+              Handle verification for {thresholds.name} is moving server-side. To continue onboarding right
+              now, link your YouTube or Twitter account instead. You can add {thresholds.name} later from
+              your profile.
+            </p>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
+                Link via YouTube or Twitter
+              </span>
+              <Button
+                onClick={() => {
+                  setOauthError(null)
+                  setPlatform('youtube')
+                }}
+                variant="ghost"
+              >
+                Switch to YouTube
+              </Button>
+            </div>
           </div>
         </Card>
       )}
@@ -335,9 +333,9 @@ export function LinkAccountStep() {
                 <Eyebrow dot dotColor={result.passesCredibility ? 'success' : 'danger'}>
                   {result.passesCredibility ? 'Account verified' : 'Account not ready'}
                 </Eyebrow>
-                <span className="font-mono text-[11px] text-ink-3">{result.handle}</span>
+                <span className="font-mono text-xs text-ink-3">{result.handle}</span>
               </div>
-              <div className="grid grid-cols-3 gap-3 text-[13px]">
+              <div className="grid grid-cols-3 gap-3 text-sm">
                 <CredibilityStat
                   label="Followers"
                   value={result.followers.toLocaleString()}
@@ -358,7 +356,7 @@ export function LinkAccountStep() {
                 />
               </div>
               {!result.passesCredibility ? (
-                <p className="text-[13px] text-ink-2">
+                <p className="text-sm text-ink-2">
                   Your {resultThresholds.name} account is not quite at the bar yet. You can link a
                   different account, or come back when this one grows.
                 </p>
@@ -370,9 +368,9 @@ export function LinkAccountStep() {
                 <Eyebrow dot dotColor="success">
                   {resultThresholds.name} connected
                 </Eyebrow>
-                <span className="font-mono text-[11px] text-ink-3">{result.handle}</span>
+                <span className="font-mono text-xs text-ink-3">{result.handle}</span>
               </div>
-              <p className="text-[13px] text-ink-2">
+              <p className="text-sm text-ink-2">
                 Your {resultThresholds.name} account is linked. Ready to continue.
               </p>
             </Card>
@@ -403,10 +401,10 @@ function CredibilityStat({
   return (
     <div className="flex flex-col gap-1">
       <Eyebrow>{label}</Eyebrow>
-      <span className={cn('text-[20px] font-medium', ok ? 'text-ink' : 'text-danger')}>
+      <span className={cn('text-xl font-medium', ok ? 'text-ink' : 'text-danger')}>
         {value}
       </span>
-      <span className="text-[11px] text-ink-3">Needs {required}</span>
+      <span className="text-xs text-ink-3">Needs {required}</span>
     </div>
   )
 }

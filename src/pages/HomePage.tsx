@@ -48,7 +48,7 @@ export default function HomePage() {
           </p>
 
           <h1
-            className="font-serif text-[30px] sm:text-[44px] md:text-[56px] lg:text-[68px] leading-[1.05] tracking-tight md:tracking-tighter text-ink font-normal break-words anim-fade-up"
+            className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight md:tracking-tighter text-ink font-normal break-words anim-fade-up"
             style={{ animationDelay: '220ms' }}
           >
             Real comments,
@@ -59,7 +59,7 @@ export default function HomePage() {
           </h1>
 
           <p
-            className="mt-8 max-w-[58ch] text-[17px] text-ink-2 leading-relaxed anim-fade-up"
+            className="mt-8 max-w-[58ch] text-base text-ink-2 leading-relaxed anim-fade-up"
             style={{ animationDelay: '360ms' }}
           >
             Creators post a brief. Reviewers approve the best comments. Writers earn within the
@@ -85,7 +85,7 @@ export default function HomePage() {
           </div>
 
           <p className="mt-8 text-sm text-ink-3 anim-fade-up" style={{ animationDelay: '600ms' }}>
-            Encrypted in transit and at rest. No payment credentials stored. We don&rsquo;t sell your data.
+            Encrypted in transit. No payment credentials stored. We don&rsquo;t sell your data.
           </p>
         </div>
 
@@ -97,25 +97,25 @@ export default function HomePage() {
         >
           <div className="receipt p-7 md:-rotate-2 transition-transform duration-300 ease-out hover:-translate-y-1">
             <div className="flex items-baseline justify-between">
-              <span className="text-[11px] tracking-stamp uppercase text-r-ink-2">
+              <span className="text-xs tracking-stamp uppercase text-r-ink-2">
                 Earnings &middot; this week
               </span>
-              <span className="text-[11px] tracking-stamp uppercase text-r-ink-2">#00214</span>
+              <span className="text-xs tracking-stamp uppercase text-r-ink-2">#00214</span>
             </div>
             <hr className="my-4" />
-            <ul className="space-y-2 text-[13px]">
+            <ul className="space-y-2 text-sm">
               <li className="flex justify-between"><span>Mon &middot; 7 approved</span><span>$3.50</span></li>
               <li className="flex justify-between"><span>Tue &middot; 12 approved</span><span>$6.00</span></li>
               <li className="flex justify-between"><span>Wed &middot; 9 approved</span><span>$4.50</span></li>
               <li className="flex justify-between"><span>Thu &middot; 14 approved</span><span>$7.00</span></li>
             </ul>
             <hr className="my-4" />
-            <div className="flex justify-between text-[14px]">
+            <div className="flex justify-between text-sm">
               <span className="font-semibold">Total payable</span>
               <span className="font-semibold">$21.00</span>
             </div>
             <div className="mt-6 flex items-center justify-between">
-              <span className="text-[11px] tracking-stamp uppercase text-r-ink-2">Pays out Friday</span>
+              <span className="text-xs tracking-stamp uppercase text-r-ink-2">Pays out Friday</span>
               <span className="stamp stamp--pending anim-stamp-pulse">pending</span>
             </div>
           </div>
@@ -184,15 +184,15 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
           <div>
             <p className="eyebrow mb-4">For creators &amp; companies</p>
-            <h2 className="font-serif text-[30px] md:text-[44px] leading-[1.08] tracking-tighter text-ink">
+            <h2 className="font-serif text-3xl md:text-5xl leading-[1.08] tracking-tighter text-ink">
               Briefs that land in <span className="signature">the right voice</span>.
             </h2>
-            <p className="mt-6 text-[15px] text-ink-2 leading-relaxed max-w-[55ch]">
+            <p className="mt-6 text-base text-ink-2 leading-relaxed max-w-[55ch]">
               Drop in the post you want lifted, the keyword that needs to land, and the tone. We
               route it to a vetted pool of human writers and only ship comments that pass a real
               reviewer. No bot farms, no boosting, no template spam.
             </p>
-            <ul className="mt-6 space-y-2.5 text-[14px] text-ink-2">
+            <ul className="mt-6 space-y-2.5 text-sm text-ink-2">
               <Bullet>One post, one pay rate, many writers</Bullet>
               <Bullet>Keyword + tone controls per brief</Bullet>
               <Bullet>Every reply reviewed by a human before payout</Bullet>
@@ -295,10 +295,10 @@ export default function HomePage() {
       <Section variant="surface">
         <div className="rounded-2xl border border-divider bg-surface px-6 py-12 md:px-14 md:py-16 shadow-card text-center">
           <p className="eyebrow">Ready when you are</p>
-          <h2 className="mt-4 font-serif text-[30px] md:text-[44px] leading-[1.08] tracking-tighter text-ink">
+          <h2 className="mt-4 font-serif text-3xl md:text-5xl leading-[1.08] tracking-tighter text-ink">
             Real comments, <span className="signature">paid by the post</span>.
           </h2>
-          <p className="mt-5 max-w-[58ch] mx-auto text-[15px] text-ink-2 leading-relaxed">
+          <p className="mt-5 max-w-[58ch] mx-auto text-base text-ink-2 leading-relaxed">
             Two minutes to sign up. Five practice tasks before the marketplace opens.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -322,12 +322,12 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-3 max-w-[36ch]">
             <Logo className="h-8 w-auto" />
-            <p className="text-[13px] text-ink-3 leading-relaxed">
+            <p className="text-sm text-ink-3 leading-relaxed">
               A microtask platform for viral comments. Built by humans, reviewed by humans, paid in
               hours.
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-[13px]">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm">
             <FootCol heading="Product">
               <FootLink href="#how">How it works</FootLink>
               <FootLink href="#creators">For creators</FootLink>
@@ -437,11 +437,11 @@ function SectionHeader({
   return (
     <div className="max-w-3xl">
       <p className="eyebrow mb-4">{eyebrow}</p>
-      <h2 className="font-serif text-[30px] md:text-[44px] leading-[1.08] tracking-tighter text-ink">
+      <h2 className="font-serif text-3xl md:text-5xl leading-[1.08] tracking-tighter text-ink">
         {rendered}
       </h2>
       {intro ? (
-        <p className="mt-5 text-[15px] text-ink-2 leading-relaxed max-w-[58ch]">{intro}</p>
+        <p className="mt-5 text-base text-ink-2 leading-relaxed max-w-[58ch]">{intro}</p>
       ) : null}
     </div>
   )
@@ -450,11 +450,11 @@ function SectionHeader({
 function HowStep({ n, title, body }: { n: string; title: string; body: string }) {
   return (
     <div className="rounded-xl border border-divider bg-surface p-6 shadow-card transition-transform duration-200 hover:-translate-y-0.5">
-      <span className="block font-serif text-[44px] md:text-[56px] leading-none tracking-tighter text-brand tabular-nums">
+      <span className="block font-serif text-5xl md:text-6xl leading-none tracking-tighter text-brand tabular-nums">
         {n}
       </span>
-      <h3 className="mt-4 text-[18px] font-semibold text-ink">{title}</h3>
-      <p className="mt-2 text-[13.5px] text-ink-2 leading-relaxed">{body}</p>
+      <h3 className="mt-4 text-lg font-semibold text-ink">{title}</h3>
+      <p className="mt-2 text-sm text-ink-2 leading-relaxed">{body}</p>
     </div>
   )
 }
@@ -471,8 +471,8 @@ function Bullet({ children }: { children: React.ReactNode }) {
 function Guarantee({ title, body }: { title: string; body: string }) {
   return (
     <div className="rounded-xl border border-divider bg-surface p-5 shadow-card">
-      <p className="font-mono text-[10px] tracking-stamp uppercase text-brand">{title}</p>
-      <p className="mt-2 text-[13.5px] text-ink-2 leading-relaxed">{body}</p>
+      <p className="font-mono text-2xs tracking-stamp uppercase text-brand">{title}</p>
+      <p className="mt-2 text-sm text-ink-2 leading-relaxed">{body}</p>
     </div>
   )
 }
@@ -504,13 +504,13 @@ function PricingCard({
       <div>
         <p className="eyebrow">{tier}</p>
         <div className="mt-3 flex items-baseline gap-2">
-          <span className="font-serif text-[34px] leading-none text-ink tracking-tighter">
+          <span className="font-serif text-3xl leading-none text-ink tracking-tighter">
             {price}
           </span>
-          <span className="text-[12px] text-ink-3">{tagline}</span>
+          <span className="text-xs text-ink-3">{tagline}</span>
         </div>
       </div>
-      <ul className="flex flex-col gap-2 text-[13.5px] text-ink-2">
+      <ul className="flex flex-col gap-2 text-sm text-ink-2">
         {features.map((f) => (
           <Bullet key={f}>{f}</Bullet>
         ))}
@@ -533,7 +533,7 @@ function PricingCard({
 function FootCol({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">{heading}</p>
+      <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">{heading}</p>
       <div className="flex flex-col gap-1.5">{children}</div>
     </div>
   )
@@ -554,26 +554,26 @@ function DashboardMockup() {
         <span className="h-2.5 w-2.5 rounded-full bg-danger/60" />
         <span className="h-2.5 w-2.5 rounded-full bg-warning/70" />
         <span className="h-2.5 w-2.5 rounded-full bg-success/70" />
-        <span className="ml-3 font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+        <span className="ml-3 font-mono text-2xs tracking-stamp uppercase text-ink-3">
           microchore.com/app
         </span>
       </div>
       <div className="grid grid-cols-12 min-h-[320px]">
         <div className="col-span-3 border-r border-divider p-4 bg-bg/40 flex flex-col gap-2">
-          <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">Overview</p>
-          <div className="rounded-md bg-brand-soft text-brand px-2.5 py-1.5 text-[12px] font-medium">
+          <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Overview</p>
+          <div className="rounded-md bg-brand-soft text-brand px-2.5 py-1.5 text-xs font-medium">
             Dashboard
           </div>
-          <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3 mt-3">Work</p>
-          <span className="px-2.5 py-1.5 text-[12px] text-ink-2">Marketplace</span>
-          <span className="px-2.5 py-1.5 text-[12px] text-ink-2">Submissions</span>
-          <span className="px-2.5 py-1.5 text-[12px] text-ink-2">Earnings</span>
+          <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3 mt-3">Work</p>
+          <span className="px-2.5 py-1.5 text-xs text-ink-2">Marketplace</span>
+          <span className="px-2.5 py-1.5 text-xs text-ink-2">Submissions</span>
+          <span className="px-2.5 py-1.5 text-xs text-ink-2">Earnings</span>
         </div>
         <div className="col-span-9 p-5 flex flex-col gap-4">
           <div className="flex items-end justify-between">
             <div>
-              <h3 className="text-[18px] font-bold text-ink">Dashboard</h3>
-              <p className="text-[11px] text-ink-3 mt-0.5">THU · MAY 28 · Cleared for real briefs</p>
+              <h3 className="text-lg font-bold text-ink">Dashboard</h3>
+              <p className="text-xs text-ink-3 mt-0.5">THU · MAY 28 · Cleared for real briefs</p>
             </div>
             <div className="flex items-center gap-2 rounded-full border border-divider bg-surface px-3 py-1.5 shadow-card">
               <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-soft text-brand">
@@ -581,24 +581,24 @@ function DashboardMockup() {
                   <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
                 </svg>
               </span>
-              <span className="font-mono text-[15px] font-bold text-ink tabular-nums">12</span>
-              <span className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">day streak</span>
+              <span className="font-mono text-base font-bold text-ink tabular-nums">12</span>
+              <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">day streak</span>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-lg border border-divider p-3">
-              <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">Earned</p>
-              <p className="font-mono text-[18px] font-bold text-ink mt-1 tabular-nums">$47.20</p>
+              <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Earned</p>
+              <p className="font-mono text-lg font-bold text-ink mt-1 tabular-nums">$47.20</p>
             </div>
             <div className="rounded-lg border border-divider p-3">
-              <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">Pending</p>
-              <p className="font-mono text-[18px] font-bold text-ink mt-1 tabular-nums">$6.40</p>
+              <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Pending</p>
+              <p className="font-mono text-lg font-bold text-ink mt-1 tabular-nums">$6.40</p>
             </div>
           </div>
           <div className="rounded-lg border border-divider p-3">
-            <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">Next brief</p>
-            <p className="text-[13px] text-ink mt-1.5 font-medium">Reply to launch tweet</p>
-            <p className="text-[11px] text-ink-3 mt-0.5">Keyword: agents · Tone: product · 7 slots left</p>
+            <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Next brief</p>
+            <p className="text-sm text-ink mt-1.5 font-medium">Reply to launch tweet</p>
+            <p className="text-xs text-ink-3 mt-0.5">Keyword: agents · Tone: product · 7 slots left</p>
           </div>
         </div>
       </div>
@@ -611,22 +611,22 @@ function ReceiptMockup() {
     <div className="lg:col-span-2">
       <div className="receipt p-6 md:rotate-1 transition-transform duration-300 ease-out hover:-translate-y-1">
         <div className="flex items-baseline justify-between">
-          <span className="text-[10px] tracking-stamp uppercase text-r-ink-2">Receipt #00478</span>
-          <span className="text-[10px] tracking-stamp uppercase text-r-ink-2">May 27</span>
+          <span className="text-2xs tracking-stamp uppercase text-r-ink-2">Receipt #00478</span>
+          <span className="text-2xs tracking-stamp uppercase text-r-ink-2">May 27</span>
         </div>
         <hr className="my-3" />
-        <p className="text-[12px] text-r-ink leading-relaxed">
+        <p className="text-xs text-r-ink leading-relaxed">
           1x Comment, approved <br />
           Project: Acme launch tweet <br />
           Reviewer: T1 (rated 5 of 5)
         </p>
         <hr className="my-3" />
-        <div className="flex justify-between text-[13px]">
+        <div className="flex justify-between text-sm">
           <span className="font-semibold">Paid</span>
           <span className="font-semibold">$0.40</span>
         </div>
         <div className="mt-5 flex items-center justify-between">
-          <span className="text-[10px] tracking-stamp uppercase text-r-ink-2">Cleared instantly</span>
+          <span className="text-2xs tracking-stamp uppercase text-r-ink-2">Cleared instantly</span>
           <span className="stamp stamp--paid">paid</span>
         </div>
       </div>
@@ -641,46 +641,46 @@ function CompanyMockup() {
         <span className="h-2.5 w-2.5 rounded-full bg-danger/60" />
         <span className="h-2.5 w-2.5 rounded-full bg-warning/70" />
         <span className="h-2.5 w-2.5 rounded-full bg-success/70" />
-        <span className="ml-3 font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+        <span className="ml-3 font-mono text-2xs tracking-stamp uppercase text-ink-3">
           microchore.com/company
         </span>
       </div>
       <div className="p-5 flex flex-col gap-4 min-h-[320px]">
         <div className="flex items-baseline justify-between">
-          <h3 className="text-[16px] font-bold text-ink">Acme launch tweet</h3>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-success">
+          <h3 className="text-base font-bold text-ink">Acme launch tweet</h3>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/10 px-2 py-0.5 text-2xs font-bold uppercase tracking-[0.1em] text-success">
             <span className="h-1.5 w-1.5 rounded-full bg-success" />
             active
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-2 text-[12px]">
+        <div className="grid grid-cols-3 gap-2 text-xs">
           <div className="rounded-md border border-divider p-2.5">
-            <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">Slots</p>
-            <p className="font-mono text-[15px] font-bold text-ink mt-0.5 tabular-nums">14 / 25</p>
+            <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Slots</p>
+            <p className="font-mono text-base font-bold text-ink mt-0.5 tabular-nums">14 / 25</p>
           </div>
           <div className="rounded-md border border-divider p-2.5">
-            <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">Pay rate</p>
-            <p className="font-mono text-[15px] font-bold text-ink mt-0.5 tabular-nums">$0.40</p>
+            <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Pay rate</p>
+            <p className="font-mono text-base font-bold text-ink mt-0.5 tabular-nums">$0.40</p>
           </div>
           <div className="rounded-md border border-divider p-2.5">
-            <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">Approved</p>
-            <p className="font-mono text-[15px] font-bold text-success mt-0.5 tabular-nums">11</p>
+            <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Approved</p>
+            <p className="font-mono text-base font-bold text-success mt-0.5 tabular-nums">11</p>
           </div>
         </div>
         <div className="rounded-lg border border-divider p-3">
-          <p className="font-mono text-[9px] tracking-stamp uppercase text-ink-3">Recent submissions</p>
+          <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Recent submissions</p>
           <ul className="mt-2 divide-y divide-dashed divide-divider">
             <li className="flex items-center justify-between py-1.5">
-              <span className="text-[12px] text-ink truncate">writer1 - agents land harder when</span>
-              <span className="stamp stamp--paid text-[9px]">paid</span>
+              <span className="text-xs text-ink truncate">writer1 - agents land harder when</span>
+              <span className="stamp stamp--paid text-2xs">paid</span>
             </li>
             <li className="flex items-center justify-between py-1.5">
-              <span className="text-[12px] text-ink truncate">writer2 - the bit about latency hit</span>
-              <span className="stamp stamp--paid text-[9px]">paid</span>
+              <span className="text-xs text-ink truncate">writer2 - the bit about latency hit</span>
+              <span className="stamp stamp--paid text-2xs">paid</span>
             </li>
             <li className="flex items-center justify-between py-1.5">
-              <span className="text-[12px] text-ink truncate">writer3 - agents are doing the boring</span>
-              <span className="stamp stamp--pending text-[9px]">pending</span>
+              <span className="text-xs text-ink truncate">writer3 - agents are doing the boring</span>
+              <span className="stamp stamp--pending text-2xs">pending</span>
             </li>
           </ul>
         </div>

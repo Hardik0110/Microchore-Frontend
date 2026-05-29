@@ -6,7 +6,7 @@ import { ChevronLeftIcon } from '../../components/ui/NavIcons'
 import { useSubmissions, type Submission, type Task } from '../../lib/store'
 import { apiGetTask } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
-import { cn, formatCurrency, formatRelative, usePasteTracker } from '../../lib/ui-utils'
+import { cn, formatCurrency, formatRelative, safeHref, usePasteTracker } from '../../lib/ui-utils'
 import { PLATFORM_DOMAIN, PLATFORM_GLYPH, PLATFORM_LABEL } from './shared'
 
 export function TaskDetailPage() {
@@ -24,7 +24,7 @@ export function TaskDetailPage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const attested = attestedThoughtful && attestedNoGeneric
-  const { stats, pastedRatio, reset, onPaste } = usePasteTracker(text)
+  const { stats, pastedRatio, reset } = usePasteTracker(text)
   const counterRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function TaskDetailPage() {
   if (loadingTask) {
     return (
       <div className="flex flex-col gap-4">
-        <p className="text-[14px] text-ink-3">Loading task...</p>
+        <p className="text-sm text-ink-3">Loading task...</p>
       </div>
     )
   }
@@ -68,7 +68,7 @@ export function TaskDetailPage() {
   if (!task) {
     return (
       <div className="flex flex-col gap-4">
-        <p className="text-[14px] text-ink-2">Task not found.</p>
+        <p className="text-sm text-ink-2">Task not found.</p>
         <Link to="/app" className="text-brand transition-colors hover:text-brand-deep">
           Back to dashboard
         </Link>
@@ -134,12 +134,12 @@ export function TaskDetailPage() {
       <div className="flex items-center justify-between gap-4">
         <Link
           to={isStarter ? "/app" : "/app/marketplace"}
-          className="inline-flex items-center gap-1.5 rounded-full bg-brand text-white px-3.5 py-2 text-[13px] font-medium hover:bg-brand-deep transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-full bg-brand text-white px-3.5 py-2 text-sm font-medium hover:bg-brand-deep transition-colors"
         >
           <ChevronLeftIcon size={16} />
           {isStarter ? "Dashboard" : "Marketplace"}
         </Link>
-        <span className="rounded-full bg-surface border border-divider px-3 py-1.5 text-[12px] text-ink-2">
+        <span className="rounded-full bg-surface border border-divider px-3 py-1.5 text-xs text-ink-2">
           {task.remaining} remaining tasks
         </span>
       </div>
@@ -147,7 +147,7 @@ export function TaskDetailPage() {
       <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink flex items-center gap-2 flex-wrap">
         <span>Task: Comment on</span>
         <span className="text-brand">{task.targetHandle}</span>
-        <span className="text-[14px] text-ink-3 font-normal">
+        <span className="text-sm text-ink-3 font-normal">
           (via {PLATFORM_LABEL[task.platform]})
         </span>
         <span className="inline-flex items-center text-ink-2">
@@ -162,24 +162,24 @@ export function TaskDetailPage() {
           <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)_320px]">
             <Card className="p-5 flex flex-col gap-3">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[13px] text-ink-2">Reward</span>
-                <span className="text-[13px] text-ink font-medium">
+                <span className="text-sm text-ink-2">Reward</span>
+                <span className="text-sm text-ink font-medium">
                   {formatCurrency(task.payRate)} per approved
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[13px] text-ink-2">Cadence</span>
-                <span className="text-[13px] text-ink font-medium">{task.payoutCadence}</span>
+                <span className="text-sm text-ink-2">Cadence</span>
+                <span className="text-sm text-ink font-medium">{task.payoutCadence}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[13px] text-ink-2">Method</span>
-                <span className="text-[13px] text-ink font-medium uppercase">
+                <span className="text-sm text-ink-2">Method</span>
+                <span className="text-sm text-ink font-medium uppercase">
                   {task.payoutMethod}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[13px] text-ink-2">Min Payout</span>
-                <span className="text-[13px] text-ink font-medium">
+                <span className="text-sm text-ink-2">Min Payout</span>
+                <span className="text-sm text-ink font-medium">
                   {formatCurrency(task.payoutMin)}
                 </span>
               </div>
@@ -188,43 +188,57 @@ export function TaskDetailPage() {
             <div className="flex flex-col gap-4 min-w-0">
               <Card className="p-4">
                 <p className="text-sm font-medium text-ink mb-3">Target Post</p>
-                <a
-                  href={task.targetUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-md border border-divider p-3 hover:border-brand transition-colors group"
-                >
-                  <span className="w-10 h-10 rounded-full bg-brand-50 text-brand flex items-center justify-center shrink-0">
-                    <PlatformGlyph size={18} />
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-ink truncate">{task.targetHandle}</p>
-                    <p className="text-xs text-ink-3 truncate">{task.targetUrl}</p>
-                  </div>
-                  <svg
-                    width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden
-                    className="text-ink-3 group-hover:text-brand shrink-0"
-                  >
-                    <path d="M7 17 17 7M7 7h10v10" />
-                  </svg>
-                </a>
+                {(() => {
+                  const targetHref = safeHref(task.targetUrl)
+                  const inner = (
+                    <>
+                      <span className="w-10 h-10 rounded-full bg-brand-50 text-brand flex items-center justify-center shrink-0">
+                        <PlatformGlyph size={18} />
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-ink truncate">{task.targetHandle}</p>
+                        <p className="text-xs text-ink-3 truncate">{task.targetUrl}</p>
+                      </div>
+                      <svg
+                        width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden
+                        className="text-ink-3 group-hover:text-brand shrink-0"
+                      >
+                        <path d="M7 17 17 7M7 7h10v10" />
+                      </svg>
+                    </>
+                  )
+                  return targetHref ? (
+                    <a
+                      href={targetHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-md border border-divider p-3 hover:border-brand transition-colors group"
+                    >
+                      {inner}
+                    </a>
+                  ) : (
+                    <span className="flex items-center gap-3 rounded-md border border-divider p-3">
+                      {inner}
+                    </span>
+                  )
+                })()}
               </Card>
 
               <Card className="p-4 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-ink">Type your reply</p>
-                  <p className="text-[11px] text-ink-3 font-mono">
+                  <p className="text-xs text-ink-3 font-mono">
                     {text.length} chars · {wordCount} words
                   </p>
                 </div>
-                <p className="text-[11px] text-ink-3">
+                <p className="text-xs text-ink-3">
                   Pasting is disabled. We track typing for quality, so write in your own voice.
                 </p>
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  onPaste={(e) => { onPaste(e); e.preventDefault() }}
+                  onPaste={(e) => e.preventDefault()}
                   onDrop={(e) => e.preventDefault()}
                   placeholder={`Write your reply. Include the keyword "${task.keyword}" naturally.`}
                   rows={6}
@@ -267,9 +281,9 @@ export function TaskDetailPage() {
                 {submitting ? 'Submitting…' : 'Verify and Submit for Approval'}
               </button>
               {submitError ? (
-                <p className="text-[12px] text-danger" role="alert">{submitError}</p>
+                <p className="text-xs text-danger" role="alert">{submitError}</p>
               ) : null}
-              <p className="text-[11px] text-ink-3 text-center">
+              <p className="text-xs text-ink-3 text-center">
                 {!commentUrl.trim()
                   ? 'Awaiting URL paste'
                   : !canSubmit
@@ -313,9 +327,9 @@ export function TaskDetailPage() {
                   <span className={cn("text-sm font-medium", lengthOK ? "text-brand" : "text-ink")}>
                     Minimum 24 Characters
                   </span>
-                  <span className="text-[11px] text-ink-3 font-mono">{charsDone}/24</span>
+                  <span className="text-xs text-ink-3 font-mono">{charsDone}/24</span>
                 </div>
-                <div className="h-1.5 bg-grey-soft rounded-full overflow-hidden">
+                <div className="h-1.5 bg-ghost-soft rounded-full overflow-hidden">
                   <div
                     className={cn("h-full rounded-full transition-all", lengthOK ? "bg-brand" : "bg-brand-300")}
                     style={{ width: `${charsPct}%` }}
@@ -334,8 +348,8 @@ export function TaskDetailPage() {
                   <span className="text-sm font-medium text-ink">
                     Keyword Included:{' '}
                     <span className={cn(
-                      "font-mono px-1.5 py-0.5 rounded text-[12px]",
-                      keywordOK ? "bg-brand-50 text-brand-700" : "bg-grey-soft text-ink-3",
+                      "font-mono px-1.5 py-0.5 rounded text-xs",
+                      keywordOK ? "bg-brand-50 text-brand-700" : "bg-ghost-soft text-ink-3",
                     )}>
                       "{task.keyword}"
                     </span>
@@ -350,7 +364,7 @@ export function TaskDetailPage() {
             <div
               ref={counterRef}
               className={cn(
-                'flex items-center justify-between text-[11px] font-mono tracking-stamp uppercase mt-2 pt-3 border-t border-divider',
+                'flex items-center justify-between text-xs font-mono tracking-stamp uppercase mt-2 pt-3 border-t border-divider',
                 pastedRatio > 80 ? 'text-danger' : 'text-ink-3',
               )}
             >
@@ -405,11 +419,11 @@ function SubmissionCard({
         {submission.status === 'rejected' ? <Stamp tone="rejected" /> : null}
       </div>
 
-      <div className="rounded-md border border-divider bg-bg p-4 text-[14px] text-ink leading-relaxed">
+      <div className="rounded-md border border-divider bg-bg p-4 text-sm text-ink leading-relaxed">
         {submission.text}
       </div>
 
-      <div className="grid grid-cols-3 gap-3 text-[12.5px] text-ink-2">
+      <div className="grid grid-cols-3 gap-3 text-xs text-ink-2">
         <div>
           <Eyebrow>Typed</Eyebrow>
           <div className="mt-1 text-ink">{submission.charsTyped} chars</div>
@@ -427,15 +441,15 @@ function SubmissionCard({
       {submission.status !== 'pending' ? (
         <div className="border-t border-divider pt-4 flex flex-col gap-2">
           <Eyebrow>Reviewer note</Eyebrow>
-          <p className="text-[13.5px] text-ink-2 leading-relaxed">
+          <p className="text-sm text-ink-2 leading-relaxed">
             {submission.justification ?? 'No justification recorded.'}
           </p>
           {submission.status === 'approved' && !submission.isStarter ? (
             <div className="flex items-center justify-between mt-2">
-              <span className="text-[12px] text-ink-3">
+              <span className="text-xs text-ink-3">
                 Rating <span className="text-ink font-medium">{submission.rating}/5</span>
               </span>
-              <span className="signature text-[22px] leading-none">
+              <span className="signature text-xl leading-none">
                 {formatCurrency(submission.basePayout + submission.bonusPayout)}
               </span>
             </div>
@@ -443,29 +457,34 @@ function SubmissionCard({
         </div>
       ) : null}
 
-      <a
-        href={submission.commentUrl}
-        target="_blank"
-        rel="noreferrer"
-        className="group inline-flex items-center gap-1.5 self-start rounded-md px-2 py-1 -mx-2 -my-1 text-[13px] text-brand transition-colors hover:bg-brand-soft hover:text-brand-deep"
-      >
-        Open comment
-        <svg
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-          className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-        >
-          <path d="M7 17 17 7M7 7h10v10" />
-        </svg>
-      </a>
-      <span className="text-[11px] text-ink-3 font-mono tracking-stamp uppercase">
+      {(() => {
+        const commentHref = safeHref(submission.commentUrl)
+        return commentHref ? (
+          <a
+            href={commentHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-1.5 self-start rounded-md px-2 py-1 -mx-2 -my-1 text-sm text-brand transition-colors hover:bg-brand-soft hover:text-brand-deep"
+          >
+            Open comment
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            >
+              <path d="M7 17 17 7M7 7h10v10" />
+            </svg>
+          </a>
+        ) : null
+      })()}
+      <span className="text-xs text-ink-3 font-mono tracking-stamp uppercase">
         Task · {task.targetHandle}
       </span>
     </Card>

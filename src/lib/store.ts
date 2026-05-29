@@ -55,6 +55,16 @@ function fetchSubmissionsOnce(): Promise<Submission[]> {
   return submissionInflight
 }
 
+async function refreshSubmissions(): Promise<void> {
+  try {
+    const fresh = await fetchSubmissionsOnce()
+    submissionCache = fresh
+    notifySubmissions()
+  } catch {
+    void 0
+  }
+}
+
 let taskCache: Task[] = []
 let taskInflight: Promise<Task[]> | null = null
 const taskListeners = new Set<() => void>()
@@ -126,9 +136,19 @@ export function useSubmissions() {
         if (cancelled) return
         if (submissionCache.length === 0) setSubmissions([])
       })
+    const onFocus = () => {
+      if (cancelled) return
+      void refreshSubmissions()
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('focus', onFocus)
+    }
     return () => {
       cancelled = true
       submissionListeners.delete(sync)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('focus', onFocus)
+      }
     }
   }, [])
 
@@ -140,6 +160,7 @@ export function useSubmissions() {
       const created = await apiCreateSubmission(payload)
       submissionCache = [created, ...submissionCache.filter((s) => s.id !== created.id)]
       notifySubmissions()
+      void refreshSubmissions()
       return created
     },
     []

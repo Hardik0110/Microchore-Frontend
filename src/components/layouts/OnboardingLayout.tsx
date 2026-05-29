@@ -24,8 +24,8 @@ export function OnboardingLayout() {
       navigate('/app', { replace: true })
       return
     }
-    const expected = WIZARD_ROUTES[user.wizardStep]
-    if (expected && !location.pathname.startsWith(expected)) {
+    const expected = WIZARD_ROUTES[user.wizardStep] ?? '/onboarding/verify-email'
+    if (!location.pathname.startsWith(expected)) {
       navigate(expected, { replace: true })
     }
   }, [user, isHydrating, location.pathname, navigate, isStandaloneLink])
@@ -46,11 +46,11 @@ export function OnboardingLayout() {
           <Logo className="h-8 w-auto" />
         </Link>
         {isDone ? (
-          <Link to="/app/profile" className="font-mono text-[10px] tracking-stamp uppercase text-ink-3 hover:text-brand transition-colors">
+          <Link to="/app/profile" className="font-mono text-2xs tracking-stamp uppercase text-ink-3 hover:text-brand transition-colors">
             Back to profile
           </Link>
         ) : (
-          <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+          <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
             Step {stepNumber} of {total}
           </span>
         )}

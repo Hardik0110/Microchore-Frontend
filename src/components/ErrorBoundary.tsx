@@ -30,13 +30,13 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen bg-bg text-ink flex items-center justify-center px-6">
           <div className="max-w-md w-full text-center">
-            <p className="font-mono text-[10px] tracking-stamp uppercase text-ink-3 mb-2">
+            <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3 mb-2">
               Something broke
             </p>
             <h1 className="font-serif text-2xl text-ink mb-3">
               The page hit an error.
             </h1>
-            <p className="text-[14px] text-ink-2 mb-6">
+            <p className="text-sm text-ink-2 mb-6">
               Reloading usually fixes it. If it keeps happening, contact support.
             </p>
             <button

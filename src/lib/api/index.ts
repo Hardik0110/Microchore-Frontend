@@ -8,6 +8,7 @@ export {
   clearTokens,
   getApiInflightCount,
   subscribeApiInflight,
+  subscribeSessionExpired,
   type FetchOpts,
 } from './client'
 

@@ -26,7 +26,7 @@ function formatRating(value: number | null): string {
 }
 
 export function AdminUsersPage() {
-  const { user } = useAuth()
+  const { user, isHydrating } = useAuth()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -48,15 +48,18 @@ export function AdminUsersPage() {
       setTotal(res.total)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load users.')
+      setUsers([])
+      setTotal(0)
     } finally {
       setLoading(false)
     }
   }, [offset, query])
 
   useEffect(() => {
+    if (isHydrating) return
     if (!isPlatformAdmin) return
     load()
-  }, [isPlatformAdmin, load])
+  }, [isHydrating, isPlatformAdmin, load])
 
   async function handlePromote(target: AdminUser, tier: Tier) {
     setPromotingId(target.id)
@@ -77,16 +80,17 @@ export function AdminUsersPage() {
     return { start, end }
   }, [offset, total])
 
-  if (user === null) return null
+  if (isHydrating) return null
+  if (!user) return <Navigate to="/login" replace />
   if (!isPlatformAdmin) return <Navigate to="/" replace />
 
   return (
     <main className="min-h-screen bg-bg text-ink px-6 py-8">
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         <div className="flex flex-col gap-1">
-          <p className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">Platform admin</p>
+          <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Platform admin</p>
           <h1 className="font-serif text-3xl text-ink tracking-tighter">Users</h1>
-          <p className="text-[14px] text-ink-2">
+          <p className="text-sm text-ink-2">
             Everyone on the platform — connected socials, review ratings, and a path to promote writers into reviewers.
           </p>
         </div>
@@ -125,18 +129,18 @@ export function AdminUsersPage() {
             ) : null}
           </form>
 
-          {error ? <p className="text-[13px] text-danger" role="alert">{error}</p> : null}
-          {promoteError ? <p className="text-[13px] text-danger" role="alert">{promoteError}</p> : null}
+          {error ? <p className="text-sm text-danger" role="alert">{error}</p> : null}
+          {promoteError ? <p className="text-sm text-danger" role="alert">{promoteError}</p> : null}
 
           {loading ? (
-            <p className="text-[14px] text-ink-3">Loading users…</p>
+            <p className="text-sm text-ink-3">Loading users…</p>
           ) : users.length === 0 ? (
-            <p className="text-[14px] text-ink-3">No users match.</p>
+            <p className="text-sm text-ink-3">No users match.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-[13px]">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left font-mono text-[10px] tracking-stamp uppercase text-ink-3 border-b border-divider">
+                  <tr className="text-left font-mono text-2xs tracking-stamp uppercase text-ink-3 border-b border-divider">
                     <th className="py-2 pr-3">Email</th>
                     <th className="py-2 pr-3">Role</th>
                     <th className="py-2 pr-3">Socials</th>
@@ -152,7 +156,7 @@ export function AdminUsersPage() {
                       <td className="py-3 pr-3">
                         <div className="flex flex-col">
                           <span className="text-ink">{u.email}</span>
-                          {u.handle ? <span className="text-ink-3 text-[12px]">@{u.handle}</span> : null}
+                          {u.handle ? <span className="text-ink-3 text-xs">@{u.handle}</span> : null}
                         </div>
                       </td>
                       <td className="py-3 pr-3 text-ink-2">{u.role}</td>
@@ -163,12 +167,12 @@ export function AdminUsersPage() {
                           <ul className="flex flex-col gap-0.5">
                             {u.socialAccounts.map((sa) => (
                               <li key={`${sa.platform}-${sa.handle}`} className="text-ink-2">
-                                <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3 mr-1">
+                                <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3 mr-1">
                                   {PLATFORM_LABEL[sa.platform] ?? sa.platform}
                                 </span>
                                 @{sa.handle}
                                 {sa.followerCount ? (
-                                  <span className="text-ink-3 text-[11px] ml-1">({sa.followerCount.toLocaleString()} followers)</span>
+                                  <span className="text-ink-3 text-xs ml-1">({sa.followerCount.toLocaleString()} followers)</span>
                                 ) : null}
                               </li>
                             ))}
@@ -182,7 +186,7 @@ export function AdminUsersPage() {
                           <span>
                             {u.reviewerTier}
                             {u.reviewerMultiplier != null ? (
-                              <span className="text-ink-3 text-[11px] ml-1">×{u.reviewerMultiplier.toFixed(2)}</span>
+                              <span className="text-ink-3 text-xs ml-1">×{u.reviewerMultiplier.toFixed(2)}</span>
                             ) : null}
                           </span>
                         ) : (
@@ -203,7 +207,7 @@ export function AdminUsersPage() {
             </div>
           )}
 
-          <div className="flex items-center justify-between text-[12px] text-ink-3">
+          <div className="flex items-center justify-between text-xs text-ink-3">
             <span>
               Showing {pageRange.start}–{pageRange.end} of {total}
             </span>
@@ -252,7 +256,7 @@ function PromoteActions({
         value={selectedTier}
         onChange={(e) => setSelectedTier(e.target.value as Tier)}
         disabled={busy}
-        className="rounded-md border border-divider bg-surface px-2 py-1 text-[12px]"
+        className="rounded-md border border-divider bg-surface px-2 py-1 text-xs"
       >
         {TIER_OPTIONS.map((tier) => (
           <option key={tier} value={tier}>

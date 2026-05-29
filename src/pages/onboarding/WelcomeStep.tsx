@@ -47,12 +47,12 @@ export function WelcomeStep() {
               )}
             >
               <span className="flex items-center gap-3">
-                <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3 w-6">
+                <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3 w-6">
                   0{i + 1}
                 </span>
-                <span className="text-[14px] text-ink">{s.label}</span>
+                <span className="text-sm text-ink">{s.label}</span>
               </span>
-              <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+              <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
                 {s.time}
               </span>
             </li>

@@ -21,9 +21,9 @@ export function EarningsPage() {
           as="h1"
           text="Earned by the post."
           accents={['Earned']}
-          className="text-[44px] leading-[1.05] tracking-tight font-medium text-ink"
+          className="text-5xl leading-[1.05] tracking-tight font-medium text-ink"
         />
-        <p className="mt-4 text-[15px] text-ink-2 leading-relaxed max-w-2xl">
+        <p className="mt-4 text-base text-ink-2 leading-relaxed max-w-2xl">
           Approved within 48h. Earnings accrue here. Payout terms (date, method, threshold) are set
           per project and shown before you claim.
         </p>
@@ -56,7 +56,7 @@ export function EarningsPage() {
       {earnings.approved.length === 0 ? (
         <Card>
           <Eyebrow>No earnings yet</Eyebrow>
-          <p className="mt-2 text-[14px] text-ink-2 leading-relaxed">
+          <p className="mt-2 text-sm text-ink-2 leading-relaxed">
             {user?.realTasksUnlocked
               ? 'Pick a task on the dashboard to land your first receipt.'
               : 'Finish the practice tasks to unlock real tasks and earnings.'}
@@ -80,12 +80,12 @@ export function EarningsPage() {
                   )}
                 >
                   <div className="flex flex-col gap-1 min-w-0">
-                    <span className="text-[14px] text-ink truncate">{s.taskTitle}</span>
-                    <span className="text-[12px] text-ink-3">
+                    <span className="text-sm text-ink truncate">{s.taskTitle}</span>
+                    <span className="text-xs text-ink-3">
                       Rated {s.rating}/5 · {formatRelative(s.reviewedAt ?? s.submittedAt)}
                     </span>
                   </div>
-                  <span className="signature text-[20px] leading-none">
+                  <span className="signature text-xl leading-none">
                     {formatCurrency(s.basePayout + s.bonusPayout)}
                   </span>
                 </li>
@@ -108,7 +108,7 @@ export function EarningsPage() {
             />
             <Card className="bg-paper border-paper-edge">
               <Eyebrow>Payout terms</Eyebrow>
-              <p className="mt-2 text-[13px] text-r-ink leading-relaxed">
+              <p className="mt-2 text-sm text-r-ink leading-relaxed">
                 YRW pays workers directly through Airtm, PayPal, or crypto. Microchore exports the
                 report on the cadence the project sets. We never hold money.
               </p>

@@ -12,7 +12,7 @@ export async function apiCreateProject(
 ): Promise<Project> {
   return apiFetch<Project>('/api/projects/', {
     method: 'POST',
-    body: JSON.stringify(input),
+    body: input,
   })
 }
 
@@ -22,7 +22,7 @@ export async function apiUpdateProjectStatus(
 ): Promise<Project> {
   return apiFetch<Project>(`/api/projects/${id}/`, {
     method: 'PATCH',
-    body: JSON.stringify({ status }),
+    body: { status },
   })
 }
 
@@ -32,7 +32,7 @@ export async function apiCreateProjectTask(
 ): Promise<Task> {
   const t = await apiFetch<Task>(`/api/projects/${projectId}/tasks/`, {
     method: 'POST',
-    body: JSON.stringify(input),
+    body: input,
   })
   return { ...t, id: String(t.id) }
 }

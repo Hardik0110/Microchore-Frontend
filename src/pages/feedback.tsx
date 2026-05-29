@@ -106,7 +106,7 @@ export function FeedbackPage() {
             type="button"
             onClick={() => setFilter(k)}
             className={cn(
-              'inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-colors',
+              'inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors',
               filter === k
                 ? 'bg-brand text-white border-brand'
                 : 'bg-surface text-ink border-divider hover:border-brand'
@@ -115,7 +115,7 @@ export function FeedbackPage() {
             {FILTER_LABELS[k]}
             <span
               className={cn(
-                'inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10.5px] font-semibold tabular-nums',
+                'inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-2xs font-semibold tabular-nums',
                 filter === k ? 'bg-white/20 text-white' : 'bg-muted text-ink-3'
               )}
             >
@@ -127,16 +127,16 @@ export function FeedbackPage() {
 
       <div className="bg-surface border border-divider rounded-xl shadow-card overflow-hidden">
         <div className="flex h-12 items-center justify-between border-b border-divider px-5">
-          <h3 className="text-[14px] font-semibold text-ink">
+          <h3 className="text-sm font-semibold text-ink">
             {filtered.length} {filtered.length === 1 ? 'entry' : 'entries'}
           </h3>
-          <span className="font-mono text-[10.5px] tracking-[0.1em] uppercase text-ink-3">
+          <span className="font-mono text-2xs tracking-[0.1em] uppercase text-ink-3">
             Newest first
           </span>
         </div>
         {filtered.length === 0 ? (
           <div className="p-8 flex items-center justify-center text-center">
-            <p className="text-[13px] text-ink-3 max-w-[40ch]">
+            <p className="text-sm text-ink-3 max-w-[40ch]">
               {filter === 'all'
                 ? 'No submissions yet. Start a practice brief from the dashboard.'
                 : `No ${FILTER_LABELS[filter].toLowerCase()} entries to show.`}
@@ -203,15 +203,15 @@ function FeedbackRow({ submission }: { submission: Submission }) {
         <div className="flex flex-col gap-1 min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             {submission.isStarter ? (
-              <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3">
+              <span className="font-mono text-2xs tracking-[0.12em] uppercase text-ink-3">
                 Practice
               </span>
             ) : null}
-            <h4 className="text-[14px] font-semibold text-ink truncate">
+            <h4 className="text-sm font-semibold text-ink truncate">
               {submission.taskTitle}
             </h4>
           </div>
-          <span className="text-[11.5px] text-ink-3">
+          <span className="text-xs text-ink-3">
             {isReviewed && submission.reviewedAt
               ? `Reviewed ${formatRelative(submission.reviewedAt)}`
               : `Submitted ${formatRelative(submission.submittedAt)}`}
@@ -227,7 +227,7 @@ function FeedbackRow({ submission }: { submission: Submission }) {
 
       <p
         className={cn(
-          'text-[13px] leading-relaxed',
+          'text-sm leading-relaxed',
           submission.justification ? 'text-ink-2' : 'text-ink-3'
         )}
       >
@@ -235,8 +235,8 @@ function FeedbackRow({ submission }: { submission: Submission }) {
       </p>
 
       {submission.text ? (
-        <div className="rounded-md border border-divider bg-bg/60 px-3 py-2 text-[12.5px] text-ink-2 leading-relaxed">
-          <span className="block font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3 mb-1">
+        <div className="rounded-md border border-divider bg-bg/60 px-3 py-2 text-xs text-ink-2 leading-relaxed">
+          <span className="block font-mono text-2xs tracking-[0.12em] uppercase text-ink-3 mb-1">
             Your comment
           </span>
           {submission.text}

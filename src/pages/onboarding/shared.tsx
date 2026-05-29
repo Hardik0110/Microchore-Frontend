@@ -18,10 +18,10 @@ export function StepShell({ eyebrow, title, accents = [], intro, children }: Ste
           as="h1"
           text={title}
           accents={accents}
-          className="mt-3 font-serif text-[40px] md:text-[48px] leading-[1.05] tracking-tighter font-normal text-ink"
+          className="mt-3 font-serif text-4xl md:text-5xl leading-[1.05] tracking-tighter font-normal text-ink"
         />
       </div>
-      {intro ? <div className="text-[15px] text-ink-2 leading-relaxed">{intro}</div> : null}
+      {intro ? <div className="text-base text-ink-2 leading-relaxed">{intro}</div> : null}
       <div className="mt-2 flex flex-col gap-6">{children}</div>
     </section>
   )

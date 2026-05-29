@@ -13,7 +13,7 @@ import {
 import { PlatformTag } from '../../components/ui/PlatformTag'
 import { useAuth } from '../../lib/auth'
 import { useSubmissions, useTasks } from '../../lib/store'
-import { cn, formatCurrency, usePasteTracker } from '../../lib/ui-utils'
+import { cn, formatCurrency, safeHref, usePasteTracker } from '../../lib/ui-utils'
 import { fireSideCannons } from '../../lib/confetti'
 import { haptics } from '../../lib/haptics'
 import { StepShell } from './shared'
@@ -28,12 +28,14 @@ export function FirstTaskStep() {
   const [commentUrl, setCommentUrl] = useState('')
   const [attested, setAttested] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [done, setDone] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const { stats, pastedRatio, onPaste } = usePasteTracker(text)
   const counterRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    if (pastedRatio > 80 && counterRef.current) {
+    if (!counterRef.current) return
+    if (pastedRatio > 80) {
       counterRef.current.animate(
         [
           { transform: 'translateX(-3px)' },
@@ -41,6 +43,15 @@ export function FirstTaskStep() {
           { transform: 'translateX(0)' },
         ],
         { duration: 180, iterations: 1 }
+      )
+    } else if (pastedRatio > 30) {
+      counterRef.current.animate(
+        [
+          { transform: 'translateX(-1px)' },
+          { transform: 'translateX(1px)' },
+          { transform: 'translateX(0)' },
+        ],
+        { duration: 120, iterations: 1 }
       )
     }
   }, [pastedRatio])
@@ -51,10 +62,12 @@ export function FirstTaskStep() {
     text.trim().length >= 24 &&
     /^https?:\/\/.+/.test(commentUrl.trim()) &&
     attested &&
-    !submitting
+    !submitting &&
+    !done
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    if (submitting || done) return
     if (!canSubmit || !task) return
     setSubmitError(null)
     setSubmitting(true)
@@ -72,6 +85,7 @@ export function FirstTaskStep() {
         },
         true,
       )
+      setDone(true)
       fireSideCannons(1500)
       haptics.success()
       window.setTimeout(() => {
@@ -80,7 +94,6 @@ export function FirstTaskStep() {
       }, 1600)
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Could not submit your first task. Please try again.')
-    } finally {
       setSubmitting(false)
     }
   }
@@ -98,29 +111,36 @@ export function FirstTaskStep() {
             <PlatformTag platform={task.platform} />
             <RowTag label={task.tone} tone="accent" />
           </div>
-          <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+          <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
             Posting from your linked account
           </span>
         </div>
         <div>
           <Eyebrow>Brief</Eyebrow>
-          <p className="mt-2 text-[14px] text-ink leading-relaxed">{task.brief}</p>
+          <p className="mt-2 text-sm text-ink leading-relaxed">{task.brief}</p>
         </div>
-        <div className="flex items-center justify-between text-[13px]">
+        <div className="flex items-center justify-between text-sm">
           <span className="text-ink-2">
             Keyword:{' '}
             <span className="font-mono text-ink bg-accent-soft px-2 py-0.5 rounded">
               {task.keyword}
             </span>
           </span>
-          <a
-            href={task.targetUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="text-brand transition-colors hover:text-brand-deep"
-          >
-            Open target post
-          </a>
+          {(() => {
+            const targetHref = safeHref(task.targetUrl)
+            return targetHref ? (
+              <a
+                href={targetHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand transition-colors hover:text-brand-deep"
+              >
+                Open target post
+              </a>
+            ) : (
+              <span className="text-ink-3">No target link</span>
+            )
+          })()}
         </div>
       </Card>
 
@@ -129,7 +149,11 @@ export function FirstTaskStep() {
           htmlFor="comment"
           label="Your comment"
           required
-          helper="Aim for a complete thought. Minimum 24 characters."
+          helper={
+            text.length === 0
+              ? 'Aim for a complete thought. Minimum 24 characters.'
+              : `${text.trim().length}/24 characters`
+          }
         >
           <Textarea
             id="comment"
@@ -142,7 +166,7 @@ export function FirstTaskStep() {
         <div
           ref={counterRef}
           className={cn(
-            'flex items-center justify-between text-[11px] font-mono tracking-stamp uppercase',
+            'flex items-center justify-between text-xs font-mono tracking-stamp uppercase',
             pastedRatio > 80 ? 'text-danger' : 'text-ink-3'
           )}
         >
@@ -182,20 +206,37 @@ export function FirstTaskStep() {
           label="I wrote this in my own voice without AI assistance."
         />
 
-        <div className="flex items-center justify-between pt-2">
-          <span className="text-[12px] text-ink-3">
+        <div className="flex items-center justify-between gap-4 flex-wrap pt-2">
+          <span className="text-xs text-ink-3">
             Pay rate on practice tasks is set internally. Real-rate tasks unlock after review.
           </span>
           <Button type="submit" size="lg" disabled={!canSubmit}>
-            {submitting ? 'Submitting…' : 'Submit'}
+            {submitting ? (
+              <>
+                <svg
+                  className="h-3.5 w-3.5 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  aria-hidden
+                >
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                Submitting
+              </>
+            ) : (
+              'Submit'
+            )}
           </Button>
-          {submitError ? (
-            <p className="text-[12px] text-danger" role="alert">{submitError}</p>
-          ) : null}
         </div>
+        {submitError ? (
+          <p className="text-xs text-danger" role="alert">{submitError}</p>
+        ) : null}
       </form>
 
-      <p className="text-[12px] text-ink-3">
+      <p className="text-xs text-ink-3">
         Real tasks at {formatCurrency(0.5)} unlock after the practice tasks are reviewed.
       </p>
     </StepShell>

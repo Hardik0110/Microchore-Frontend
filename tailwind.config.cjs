@@ -43,7 +43,7 @@ module.exports = {
         },
         success: 'rgb(var(--success-rgb) / <alpha-value>)',
         danger: 'rgb(var(--danger-rgb) / <alpha-value>)',
-        warning: 'rgb(var(--accent-rgb) / <alpha-value>)',
+        warning: 'rgb(var(--warning-rgb) / <alpha-value>)',
         muted: {
           DEFAULT: 'rgb(var(--muted-rgb) / <alpha-value>)',
           foreground: 'rgb(var(--ink-3-rgb) / <alpha-value>)',
@@ -95,6 +95,9 @@ module.exports = {
       spacing: {
         '18': '4.5rem',
         '22': '5.5rem',
+      },
+      fontSize: {
+        '2xs': ['10px', { lineHeight: '14px' }],
       },
     },
   },

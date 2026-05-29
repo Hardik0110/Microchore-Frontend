@@ -63,9 +63,9 @@ export function MarketplacePage() {
           as="h1"
           text={realTasksUnlocked ? 'Pick a brief.' : 'Marketplace locked.'}
           accents={['brief']}
-          className="font-serif text-[48px] md:text-[60px] leading-[1.02] tracking-tighter font-normal text-ink"
+          className="font-serif text-5xl md:text-6xl leading-[1.02] tracking-tighter font-normal text-ink"
         />
-        <p className="text-[16px] md:text-[17px] text-ink-2 leading-relaxed max-w-[60ch]">
+        <p className="text-base md:text-base text-ink-2 leading-relaxed max-w-[60ch]">
           Open briefs across every platform you have linked. Pay rate, cadence, and payout method
           are set per project and shown on each task.
         </p>
@@ -74,7 +74,7 @@ export function MarketplacePage() {
       {!realTasksUnlocked ? (
         <Card>
           <Eyebrow dot dotColor="info">Practice tasks pending</Eyebrow>
-          <p className="mt-2 text-[14px] text-ink-2 leading-relaxed">
+          <p className="mt-2 text-sm text-ink-2 leading-relaxed">
             The marketplace opens as soon as your practice tasks are reviewed. Head back to the
             dashboard to see how many are left.
           </p>
@@ -99,7 +99,7 @@ export function MarketplacePage() {
           {filtered.length === 0 ? (
             <Card>
               <Eyebrow>No briefs match</Eyebrow>
-              <p className="mt-2 text-[14px] text-ink-2 leading-relaxed">
+              <p className="mt-2 text-sm text-ink-2 leading-relaxed">
                 Try a different platform or clear the search.
               </p>
             </Card>
@@ -150,7 +150,7 @@ function FilterBar({
             type="button"
             onClick={() => onPlatformChange(p.value)}
             className={cn(
-              'inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-colors',
+              'inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors',
               platformFilter === p.value
                 ? 'bg-brand text-white border-brand'
                 : 'bg-surface text-ink border-divider hover:border-brand'
@@ -164,15 +164,15 @@ function FilterBar({
         ))}
 
         <div className="ml-auto flex items-center gap-3">
-          <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+          <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
             {count} {count === 1 ? 'brief' : 'briefs'}
           </span>
-          <label className="flex items-center gap-2 text-[12px] text-ink-2">
-            <span className="font-mono text-[10px] tracking-stamp uppercase">Sort</span>
+          <label className="flex items-center gap-2 text-xs text-ink-2">
+            <span className="font-mono text-2xs tracking-stamp uppercase">Sort</span>
             <select
               value={sort}
               onChange={(e) => onSortChange(e.target.value as SortKey)}
-              className="rounded-md border border-divider bg-surface px-2.5 py-1.5 text-[13px] text-ink focus:outline-none focus:border-brand"
+              className="rounded-md border border-divider bg-surface px-2.5 py-1.5 text-sm text-ink focus:outline-none focus:border-brand"
             >
               {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
                 <option key={k} value={k}>
@@ -215,12 +215,12 @@ function TaskCard({ task }: { task: Task }) {
           as="h3"
           text={`Comment on ${task.targetHandle}`}
           accents={[task.targetHandle]}
-          className="text-[18px] font-medium tracking-tight text-ink"
+          className="text-lg font-medium tracking-tight text-ink"
         />
-        <p className="text-[13px] text-ink-2 leading-relaxed line-clamp-2">{task.brief}</p>
+        <p className="text-sm text-ink-2 leading-relaxed line-clamp-2">{task.brief}</p>
       </div>
 
-      <div className="flex items-center justify-between text-[12px] text-ink-3">
+      <div className="flex items-center justify-between text-xs text-ink-3">
         <span>
           Keyword:{' '}
           <span className="font-mono text-ink bg-accent-soft px-2 py-0.5 rounded">
@@ -232,8 +232,8 @@ function TaskCard({ task }: { task: Task }) {
 
       <div className="flex items-center justify-between border-t border-divider pt-4 mt-1">
         <div className="flex flex-col">
-          <span className="signature text-[24px] leading-none">{formatCurrency(task.payRate)}</span>
-          <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+          <span className="signature text-2xl leading-none">{formatCurrency(task.payRate)}</span>
+          <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
             On approval
           </span>
         </div>

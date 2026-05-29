@@ -21,19 +21,19 @@ const buttonBase =
   'inline-flex items-center justify-center gap-2 rounded-md font-medium tracking-normal transition-[transform,background-color,border-color,box-shadow,color] duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-50 disabled:cursor-not-allowed'
 
 const buttonSizes: Record<ButtonSize, string> = {
-  sm: 'px-3.5 py-2 text-[13px]',
-  md: 'px-4 py-2.5 text-[13px]',
+  sm: 'px-3.5 py-2 text-xs',
+  md: 'px-4 py-2.5 text-sm',
   lg: 'px-5 py-3 text-sm',
 }
 
 const buttonVariants: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand text-white border border-brand font-medium shadow-sm hover:bg-brand-deep hover:border-brand-deep active:translate-y-0',
+    'bg-brand text-white border border-brand font-medium shadow-sm hover:bg-brand-deep hover:border-brand-deep hover:-translate-y-[1px] active:translate-y-0',
   ghost:
-    'bg-transparent text-ink border border-divider font-medium hover:bg-muted hover:border-ink-3 active:translate-y-0',
+    'bg-transparent text-ink border border-divider font-medium hover:bg-muted hover:border-ink-3 hover:-translate-y-[1px] active:translate-y-0',
   submitted: 'bg-surface text-ink-2 border border-divider cursor-not-allowed',
   danger:
-    'bg-surface text-danger border border-divider hover:border-danger hover:bg-danger/10 active:translate-y-0',
+    'bg-surface text-danger border border-divider hover:border-danger hover:bg-danger/10 hover:-translate-y-[1px] active:translate-y-0',
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -61,7 +61,7 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 }
 
 const inputBase =
-  'w-full rounded-md border bg-surface px-3.5 py-2.5 text-[14px] text-ink placeholder:text-ink-3 transition-colors focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 disabled:opacity-50'
+  'w-full rounded-md border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-3 transition-colors focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 disabled:opacity-50'
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   { className, hasError, ...rest },
@@ -116,7 +116,7 @@ export function Field({ htmlFor, label, helper, error, required, children }: Fie
   const errorId = error ? `${htmlFor}-error` : undefined
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={htmlFor} className="text-[13px] font-medium text-ink">
+      <label htmlFor={htmlFor} className="text-sm font-medium text-ink">
         {label}
         {required ? <span className="text-ink-3 ml-1" aria-hidden>*</span> : null}
       </label>
@@ -124,11 +124,11 @@ export function Field({ htmlFor, label, helper, error, required, children }: Fie
         {children}
       </div>
       {error ? (
-        <span id={errorId} role="alert" className="text-[12px] text-danger">
+        <span id={errorId} role="alert" className="text-xs text-danger">
           {error}
         </span>
       ) : helper ? (
-        <span id={helperId} className="text-[12px] text-ink-3">
+        <span id={helperId} className="text-xs text-ink-3">
           {helper}
         </span>
       ) : null}
@@ -154,12 +154,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
         ref={ref}
         id={id}
         type="checkbox"
-        className="mt-0.5 h-4 w-4 rounded border-divider text-brand accent-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+        className="chk-pop mt-0.5 h-4 w-4 rounded border-divider text-brand accent-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
         {...rest}
       />
       <span className="flex flex-col gap-0.5">
-        <span className="text-[13.5px] text-ink leading-snug">{label}</span>
-        {helper ? <span className="text-[12px] text-ink-3 leading-snug">{helper}</span> : null}
+        <span className="text-sm text-ink leading-snug">{label}</span>
+        {helper ? <span className="text-xs text-ink-3 leading-snug">{helper}</span> : null}
       </span>
     </label>
   )
@@ -202,7 +202,7 @@ export function Eyebrow({ children, dot, dotColor = 'accent', className }: Eyebr
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 font-mono text-[10px] tracking-stamp uppercase text-ink-3',
+        'inline-flex items-center gap-1.5 font-mono text-2xs tracking-stamp uppercase text-ink-3',
         className
       )}
     >
@@ -269,7 +269,7 @@ const rowTagDots: Record<NonNullable<RowTagProps['tone']>, string> = {
 
 export function RowTag({ label, tone = 'neutral' }: RowTagProps) {
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+    <span className="inline-flex items-center gap-1.5 font-mono text-2xs tracking-stamp uppercase text-ink-3">
       <span className={cn('h-1.5 w-1.5 rounded-full', rowTagDots[tone])} aria-hidden />
       {label}
     </span>
@@ -293,18 +293,18 @@ export function StatCard({ label, value, accent, hint }: StatCardProps) {
           accent ? 'bg-brand' : 'bg-divider'
         )}
       />
-      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-ink-3">
+      <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-3">
         {label}
       </p>
       <p
         className={cn(
-          'font-mono font-bold leading-none tabular-nums text-[clamp(1.75rem,3vw,2.25rem)]',
+          'font-mono font-bold leading-none tabular-nums text-3xl sm:text-4xl',
           accent ? 'text-brand' : 'text-ink'
         )}
       >
         {value}
       </p>
-      {hint ? <p className="text-[12px] text-ink-3">{hint}</p> : null}
+      {hint ? <p className="text-xs text-ink-3">{hint}</p> : null}
     </div>
   )
 }
@@ -359,5 +359,5 @@ export function ProgressBar({ value, total, segments = false, ariaLabel }: Progr
 
 type FieldLabelProps = LabelHTMLAttributes<HTMLLabelElement>
 export function FieldLabel(props: FieldLabelProps) {
-  return <label {...props} className={cn('text-[13px] font-medium text-ink', props.className)} />
+  return <label {...props} className={cn('text-sm font-medium text-ink', props.className)} />
 }

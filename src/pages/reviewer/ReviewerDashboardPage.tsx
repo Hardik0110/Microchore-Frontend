@@ -3,15 +3,7 @@ import { Link } from 'react-router-dom'
 import { Card } from '../../components/ui/primitives'
 import { apiGetReviewerStats, ApiError, type ReviewerStats } from '../../lib/api'
 import { useAuth } from '../../lib/auth'
-
-function formatAud(amount: number): string {
-  return new Intl.NumberFormat('en-AU', {
-    style: 'currency',
-    currency: 'AUD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 4,
-  }).format(amount)
-}
+import { formatCurrency } from '../../lib/ui-utils'
 
 function formatRelative(iso: string | null): string {
   if (!iso) return 'never'
@@ -56,13 +48,13 @@ export function ReviewerDashboardPage() {
   }, [])
 
   if (loading) {
-    return <p className="text-[14px] text-ink-3">Loading reviewer stats…</p>
+    return <p className="text-sm text-ink-3">Loading reviewer stats…</p>
   }
 
   if (error) {
     return (
       <Card className="p-6">
-        <p className="text-[14px] text-danger">{error}</p>
+        <p className="text-sm text-danger">{error}</p>
       </Card>
     )
   }
@@ -74,9 +66,9 @@ export function ReviewerDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <p className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">Reviewer dashboard</p>
+        <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Reviewer dashboard</p>
         <h1 className="font-serif text-3xl text-ink tracking-tighter">Welcome back, {displayName}.</h1>
-        <p className="text-[14px] text-ink-2">
+        <p className="text-sm text-ink-2">
           {stats.queueSize > 0
             ? `${stats.queueSize} submission${stats.queueSize === 1 ? '' : 's'} waiting in your queue.`
             : 'Queue is empty right now — check back in a few minutes.'}
@@ -97,48 +89,48 @@ export function ReviewerDashboardPage() {
         />
         <StatCard
           label="Earnings (pending)"
-          value={formatAud(stats.totalPending)}
-          sub={`${formatAud(stats.totalPaid)} paid out`}
+          value={formatCurrency(stats.totalPending)}
+          sub={`${formatCurrency(stats.totalPaid)} paid out`}
         />
       </div>
 
       <Card className="p-5 flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <p className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">Queue</p>
-          <Link to="/reviewer/queue" className="text-[12px] text-brand hover:text-brand-deep transition-colors">
+          <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Queue</p>
+          <Link to="/app/queue" className="text-xs text-brand hover:text-brand-deep transition-colors">
             Open queue
           </Link>
         </div>
-        <p className="text-[14px] text-ink">
+        <p className="text-sm text-ink">
           {stats.queueSize > 0
             ? `${stats.queueSize} pending submission${stats.queueSize === 1 ? '' : 's'} ready for you.`
             : 'No pending submissions right now.'}
         </p>
-        <p className="text-[12px] text-ink-3">
+        <p className="text-xs text-ink-3">
           Three independent reviews finalize each task. Be honest, be specific, justify each rating.
         </p>
       </Card>
 
       <Card className="p-5 flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <p className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">Recent earnings</p>
-          <Link to="/reviewer/earnings" className="text-[12px] text-brand hover:text-brand-deep transition-colors">
+          <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">Recent earnings</p>
+          <Link to="/app/earnings" className="text-xs text-brand hover:text-brand-deep transition-colors">
             View all
           </Link>
         </div>
         {stats.recentEarnings.length === 0 ? (
-          <p className="text-[14px] text-ink-3">No payout entries yet. Complete reviews to earn.</p>
+          <p className="text-sm text-ink-3">No payout entries yet. Complete reviews to earn.</p>
         ) : (
           <ul className="flex flex-col divide-y divide-divider">
             {stats.recentEarnings.slice(0, 5).map((e) => (
-              <li key={e.id} className="flex items-center justify-between py-2.5 text-[13px]">
+              <li key={e.id} className="flex items-center justify-between py-2.5 text-sm">
                 <div className="flex flex-col">
                   <span className="text-ink">{e.projectName ?? '(unknown project)'}</span>
-                  <span className="text-[11px] text-ink-3">{formatRelative(e.createdAt)}</span>
+                  <span className="text-xs text-ink-3">{formatRelative(e.createdAt)}</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="font-mono text-ink">{formatAud(e.amount)}</span>
-                  <span className="text-[11px] text-ink-3">{e.status}</span>
+                  <span className="font-mono text-ink">{formatCurrency(e.amount)}</span>
+                  <span className="text-xs text-ink-3">{e.status}</span>
                 </div>
               </li>
             ))}
@@ -152,9 +144,9 @@ export function ReviewerDashboardPage() {
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <Card className="p-4 flex flex-col gap-1">
-      <p className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">{label}</p>
+      <p className="font-mono text-2xs tracking-stamp uppercase text-ink-3">{label}</p>
       <p className="font-serif text-2xl text-ink tracking-tight">{value}</p>
-      {sub ? <p className="text-[11.5px] text-ink-3">{sub}</p> : null}
+      {sub ? <p className="text-xs text-ink-3">{sub}</p> : null}
     </Card>
   )
 }

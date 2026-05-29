@@ -50,18 +50,18 @@ export function Receipt({
       )}
     >
       <div className="flex items-baseline justify-between">
-        <span className="font-mono text-[11px] font-bold tracking-stamp uppercase text-r-ink">
+        <span className="font-mono text-xs font-bold tracking-stamp uppercase text-r-ink">
           {brand}
         </span>
         {serial ? (
-          <span className="font-mono text-[11px] tracking-stamp uppercase text-r-ink-2">
+          <span className="font-mono text-xs tracking-stamp uppercase text-r-ink-2">
             {serial}
           </span>
         ) : null}
       </div>
 
       {header || subHeader ? (
-        <div className="flex items-baseline justify-between mt-2 text-r-ink-2 font-mono text-[10px] uppercase tracking-stamp">
+        <div className="flex items-baseline justify-between mt-2 text-r-ink-2 font-mono text-2xs uppercase tracking-stamp">
           <span>{header}</span>
           <span>{subHeader}</span>
         </div>
@@ -69,7 +69,7 @@ export function Receipt({
 
       <hr className="my-4" />
 
-      <ul className="space-y-2 text-[13px]">
+      <ul className="space-y-2 text-sm">
         {lines.map((line, i) => (
           <li
             key={i}
@@ -84,16 +84,16 @@ export function Receipt({
       {total ? (
         <>
           <hr className="my-4" />
-          <div className="flex justify-between items-baseline text-[14px]">
+          <div className="flex justify-between items-baseline text-sm">
             <span className="font-semibold text-r-ink">{total.label}</span>
-            <span className="signature text-[22px] leading-none">{total.value}</span>
+            <span className="signature text-xl leading-none">{total.value}</span>
           </div>
         </>
       ) : null}
 
       {stamp || footerNote ? (
         <div className="mt-6 flex items-center justify-between gap-4">
-          <span className="text-[11px] tracking-stamp uppercase text-r-ink-2">{footerNote}</span>
+          <span className="text-xs tracking-stamp uppercase text-r-ink-2">{footerNote}</span>
           {stamp ? <Stamp tone={stamp.tone}>{stamp.label}</Stamp> : null}
         </div>
       ) : null}

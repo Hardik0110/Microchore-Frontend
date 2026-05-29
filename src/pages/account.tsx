@@ -58,7 +58,7 @@ export function ProfilePage() {
           as="h1"
           text="Your account, plainly."
           accents={['plainly']}
-          className="font-serif text-[48px] md:text-[60px] leading-[1.02] tracking-tighter font-normal text-ink"
+          className="font-serif text-5xl md:text-6xl leading-[1.02] tracking-tighter font-normal text-ink"
         />
       </header>
 
@@ -78,10 +78,10 @@ export function ProfilePage() {
         </Card>
         <Card className="flex flex-col gap-3">
           <Eyebrow>Total earned</Eyebrow>
-          <div className="signature text-[36px] leading-none">
+          <div className="signature text-4xl leading-none">
             {formatCurrency(earnings.totalEarned)}
           </div>
-          <div className="text-[12px] text-ink-3">
+          <div className="text-xs text-ink-3">
             Across {earnings.approvedCount} approved tasks · Avg rating{' '}
             {earnings.averageRating ? earnings.averageRating.toFixed(2) : '·'}
           </div>
@@ -90,8 +90,8 @@ export function ProfilePage() {
 
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-[18px] font-medium text-ink">Linked accounts</h2>
-          <span className="font-mono text-[10px] tracking-stamp uppercase text-ink-3">
+          <h2 className="text-lg font-medium text-ink">Linked accounts</h2>
+          <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
             {linkedAccounts.length} of {PLATFORMS.length} linked
           </span>
         </div>
@@ -99,10 +99,10 @@ export function ProfilePage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-[18px] font-medium text-ink">Practice tasks</h2>
+        <h2 className="text-lg font-medium text-ink">Practice tasks</h2>
         <Card className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <span className="text-[14px] text-ink">
+            <span className="text-sm text-ink">
               {starterApproved} approved · {starterRejected} rejected ·{' '}
               {Math.max(0, starterSubs.length - starterApproved - starterRejected)} pending
             </span>
@@ -152,7 +152,7 @@ function Detail({
       {tone ? (
         <RowTag label={value} tone={tone} />
       ) : (
-        <span className="text-[14px] text-ink">{value}</span>
+        <span className="text-sm text-ink">{value}</span>
       )}
     </div>
   )
@@ -162,7 +162,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-1 text-right">
       <Eyebrow>{label}</Eyebrow>
-      <span className="text-[16px] text-ink font-medium">{value}</span>
+      <span className="text-base text-ink font-medium">{value}</span>
     </div>
   )
 }
@@ -187,13 +187,13 @@ function LinkedAccountsPanel({ linked }: { linked: LinkedAccount[] }) {
               <div className="flex items-center gap-3 min-w-0">
                 <PlatformTag platform={account.platform} size={18} />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[14px] text-ink font-medium truncate">{account.handle}</span>
-                  <span className="text-[11px] text-ink-3">
+                  <span className="text-sm text-ink font-medium truncate">{account.handle}</span>
+                  <span className="text-xs text-ink-3">
                     Verified {formatStampDate(account.verifiedAt)}
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 text-[12px] text-ink-2 shrink-0">
+              <div className="flex items-center gap-4 text-xs text-ink-2 shrink-0">
                 <Stat label="Followers" value={account.followers.toLocaleString()} />
                 <Stat label="Posts" value={account.posts.toLocaleString()} />
               </div>
@@ -205,8 +205,8 @@ function LinkedAccountsPanel({ linked }: { linked: LinkedAccount[] }) {
             <div className="flex items-center gap-3">
               <PlatformTag platform={p.value} size={18} className="opacity-60" />
               <div className="flex flex-col">
-                <span className="text-[14px] text-ink font-medium">{p.label}</span>
-                <span className="text-[11px] text-ink-3">Not linked yet</span>
+                <span className="text-sm text-ink font-medium">{p.label}</span>
+                <span className="text-xs text-ink-3">Not linked yet</span>
               </div>
             </div>
             {p.status === 'live' ? (
@@ -287,14 +287,14 @@ export function SettingsPage() {
           as="h1"
           text="How you get paid, contacted, and remembered."
           accents={['paid', 'remembered']}
-          className="font-serif text-[48px] md:text-[60px] leading-[1.02] tracking-tighter font-normal text-ink"
+          className="font-serif text-5xl md:text-6xl leading-[1.02] tracking-tighter font-normal text-ink"
         />
       </header>
 
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="text-[18px] font-medium text-ink">Payout</h2>
-          <p className="text-[13px] text-ink-2 mt-1">
+          <h2 className="text-lg font-medium text-ink">Payout</h2>
+          <p className="text-sm text-ink-2 mt-1">
             Microchore never holds money. YRW pays you directly via the method you choose. We only
             store the handle.
           </p>
@@ -314,7 +314,7 @@ export function SettingsPage() {
                 )}
               >
                 <Eyebrow dot={method === m}>{PAYOUT_LABELS[m]}</Eyebrow>
-                <div className="mt-2 text-[12px] text-ink-3 leading-snug">
+                <div className="mt-2 text-xs text-ink-3 leading-snug">
                   {m === 'airtm' && 'Global, low fees, used by most workers.'}
                   {m === 'paypal' && 'Faster in the US and EU.'}
                   {m === 'crypto' && 'USDC or similar stablecoin on a wallet you control.'}
@@ -340,7 +340,7 @@ export function SettingsPage() {
           ) : null}
 
           <div className="flex items-center justify-between">
-            <span className="text-[12px]">
+            <span className="text-xs">
               {saveError ? (
                 <span className="text-danger">{saveError}</span>
               ) : saved ? (
@@ -356,8 +356,8 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="text-[18px] font-medium text-ink">Appearance</h2>
-          <p className="text-[13px] text-ink-2 mt-1">
+          <h2 className="text-lg font-medium text-ink">Appearance</h2>
+          <p className="text-sm text-ink-2 mt-1">
             Light, dark, or whatever your device prefers.
           </p>
         </div>
@@ -376,7 +376,7 @@ export function SettingsPage() {
                 )}
               >
                 <Eyebrow dot={themeMode === m}>{THEME_LABELS[m]}</Eyebrow>
-                <div className="mt-2 text-[12px] text-ink-3 leading-snug">{THEME_HINTS[m]}</div>
+                <div className="mt-2 text-xs text-ink-3 leading-snug">{THEME_HINTS[m]}</div>
               </button>
             ))}
           </div>
@@ -385,8 +385,8 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="text-[18px] font-medium text-ink">Notifications</h2>
-          <p className="text-[13px] text-ink-2 mt-1">
+          <h2 className="text-lg font-medium text-ink">Notifications</h2>
+          <p className="text-sm text-ink-2 mt-1">
             Light touch. We only ping you when there is something to read.
           </p>
         </div>
@@ -417,13 +417,13 @@ export function SettingsPage() {
 
       <section className="flex flex-col gap-4">
         <div>
-          <h2 className="text-[18px] font-medium text-ink">Account</h2>
+          <h2 className="text-lg font-medium text-ink">Account</h2>
         </div>
         <Card className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[14px] text-ink">Signed in as</span>
-              <div className="text-[12px] text-ink-3">{user.email}</div>
+              <span className="text-sm text-ink">Signed in as</span>
+              <div className="text-xs text-ink-3">{user.email}</div>
             </div>
             <Button
               variant="ghost"

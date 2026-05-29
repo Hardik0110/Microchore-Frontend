@@ -80,7 +80,7 @@ export function CompanyNewProjectPage() {
       <div>
         <Link
           to="/company/projects"
-          className="inline-flex items-center gap-1.5 text-[12px] font-medium text-ink-3 transition-colors hover:text-brand"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-3 transition-colors hover:text-brand"
         >
           <ChevronBackIcon />
           Projects
@@ -96,7 +96,7 @@ export function CompanyNewProjectPage() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
         <Card className="flex flex-col gap-4">
-          <h2 className="text-[15px] font-semibold text-ink">About the project</h2>
+          <h2 className="text-base font-semibold text-ink">About the project</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field
               htmlFor="companyName"
@@ -177,7 +177,7 @@ export function CompanyNewProjectPage() {
         </Card>
 
         {formError ? (
-          <p className="text-[13px] text-danger" role="alert">{formError}</p>
+          <p className="text-sm text-danger" role="alert">{formError}</p>
         ) : null}
         <div className="flex items-center justify-end gap-3">
           <Link to="/company/projects">

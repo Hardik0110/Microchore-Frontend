@@ -11,6 +11,24 @@ export function cn(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ')
 }
 
+export function safeHref(raw?: string | null): string | undefined {
+  if (!raw) return undefined
+  try {
+    const u = new URL(raw)
+    return u.protocol === 'http:' || u.protocol === 'https:' ? u.href : undefined
+  } catch {
+    return undefined
+  }
+}
+
+export function safeInternalPath(raw?: string | null): string | undefined {
+  if (!raw) return undefined
+  if (raw.startsWith('//')) return undefined
+  if (!raw.startsWith('/')) return undefined
+  if (/^\/[a-z][a-z0-9+.-]*:/i.test(raw)) return undefined
+  return raw
+}
+
 export function formatCurrency(value: number, currency = 'USD') {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',

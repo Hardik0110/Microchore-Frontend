@@ -48,7 +48,7 @@ export function StatusPill({ status }: { status: Project['status'] }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.1em]',
+        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-2xs font-bold uppercase tracking-[0.1em]',
         tone
       )}
     >
@@ -116,7 +116,7 @@ export function ProjectsCard({
   return (
     <div className="flex flex-col overflow-hidden bg-surface border border-divider rounded-xl shadow-card">
       <div className="flex h-12 shrink-0 items-center justify-between border-b border-divider px-5">
-        <h3 className="text-[14px] font-semibold text-ink">
+        <h3 className="text-sm font-semibold text-ink">
           {showAllLink ? 'Recent projects' : 'All projects'}
         </h3>
         {showAllLink && projects.length > 0 ? (
@@ -144,7 +144,7 @@ export function ProjectsCard({
       </div>
       {projects.length === 0 ? (
         <div className="p-8 flex flex-col items-center justify-center gap-3 text-center">
-          <p className="text-[13px] text-ink-3 max-w-[40ch]">
+          <p className="text-sm text-ink-3 max-w-[40ch]">
             No projects yet. Create your first project, then add tasks under it.
           </p>
           <Link to="/company/projects/new">
@@ -162,19 +162,19 @@ export function ProjectsCard({
                   className="flex items-center gap-4 px-5 py-3 transition-colors hover:bg-bg/60"
                 >
                   <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-                    <span className="text-[14px] font-medium text-ink truncate">
+                    <span className="text-sm font-medium text-ink truncate">
                       {p.name || 'Untitled project'}
                     </span>
-                    <span className="text-[12px] text-ink-3 truncate">
+                    <span className="text-xs text-ink-3 truncate">
                       {p.companyName} · {p.description.split('\n')[0].slice(0, 80)}
                     </span>
                   </div>
                   <div className="flex items-center gap-4 shrink-0">
                     <div className="flex flex-col items-end gap-0.5">
-                      <span className="font-mono text-[14px] font-bold text-brand tabular-nums">
+                      <span className="font-mono text-sm font-bold text-brand tabular-nums">
                         {projectTasks.length}
                       </span>
-                      <span className="text-[10.5px] text-ink-3 font-mono uppercase tracking-[0.1em]">
+                      <span className="text-2xs text-ink-3 font-mono uppercase tracking-[0.1em]">
                         {projectTasks.length === 1 ? 'task' : 'tasks'}
                       </span>
                     </div>
