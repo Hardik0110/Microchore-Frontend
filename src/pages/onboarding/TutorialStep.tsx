@@ -103,11 +103,11 @@ function TutBriefMock() {
     <Card className="bg-bg p-5">
       <Eyebrow dot dotColor="accent">Brief preview</Eyebrow>
       <div className="mt-3 text-sm text-ink leading-relaxed">
-        Reply to <span className="font-mono">@yrw.brand_drop</span>. Keyword{' '}
+        Comment on <span className="font-mono">@yrw.channel</span>. Keyword{' '}
         <span className="signature signature-underline">morning</span> should feel natural.
       </div>
       <div className="mt-4 flex items-center gap-3">
-        <PlatformTag platform="instagram" />
+        <PlatformTag platform="youtube" />
         <RowTag label="14 left" tone="accent" />
         <span className="ml-auto signature text-lg leading-none">$0.50</span>
       </div>

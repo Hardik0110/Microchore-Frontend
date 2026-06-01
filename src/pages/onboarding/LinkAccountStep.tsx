@@ -5,8 +5,8 @@ import {
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
-import { apiLinkYouTube, apiTwitterStartLink } from '../../lib/api'
-import { Button, Card, Eyebrow } from '../../components/ui/primitives'
+import { apiLinkInstagram, apiLinkYouTube, apiTwitterStartLink } from '../../lib/api'
+import { Button, Card, Eyebrow, Field, Input } from '../../components/ui/primitives'
 import {
   InstagramIcon,
   TikTokIcon,
@@ -46,6 +46,8 @@ export function LinkAccountStep() {
   })
   const [verifying, setVerifying] = useState(false)
   const [twitterPending, setTwitterPending] = useState(false)
+  const [igHandle, setIgHandle] = useState('')
+  const [igPending, setIgPending] = useState(false)
   const [oauthError, setOauthError] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null
     const params = new URLSearchParams(window.location.search)
@@ -68,6 +70,27 @@ export function LinkAccountStep() {
     }
     window.history.replaceState({}, '', window.location.pathname)
   }, [refreshUser])
+
+  async function connectInstagram() {
+    const handle = igHandle.trim().replace(/^@/, '')
+    if (!handle) {
+      setOauthError('Enter your Instagram username.')
+      return
+    }
+    setOauthError(null)
+    setIgPending(true)
+    try {
+      const { linkedAccount } = await apiLinkInstagram(handle)
+      setResult(linkedAccount)
+      if (linkedAccount.passesCredibility) {
+        updateUser({ linkedAccount, handle: linkedAccount.handle })
+      }
+    } catch (err) {
+      setOauthError(err instanceof Error ? err.message : 'Could not link your Instagram account.')
+    } finally {
+      setIgPending(false)
+    }
+  }
 
   async function connectTwitter() {
     setOauthError(null)
@@ -290,6 +313,49 @@ export function LinkAccountStep() {
                 </p>
               ) : null}
             </div>
+          </Card>
+        )
+      ) : platform === 'instagram' ? (
+        user?.linkedAccount?.platform === 'instagram' && user.linkedAccount.passesCredibility ? null : (
+          <Card>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (!igPending) connectInstagram()
+              }}
+              className="flex flex-col gap-3"
+            >
+              <Eyebrow>Link your Instagram account</Eyebrow>
+              <p className="text-sm text-ink-2 leading-relaxed">
+                Enter your public Instagram username. We verify the profile exists and read your
+                handle, follower count, post count, and account age. Nothing else.
+              </p>
+              <Field htmlFor="ig-handle" label="Instagram username" required>
+                <Input
+                  id="ig-handle"
+                  type="text"
+                  value={igHandle}
+                  onChange={(e) => setIgHandle(e.target.value)}
+                  placeholder="your.handle"
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                />
+              </Field>
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <span className="font-mono text-2xs tracking-stamp uppercase text-ink-3">
+                  Public profile lookup
+                </span>
+                <Button type="submit" disabled={igPending || !igHandle.trim()} variant="ghost">
+                  {igPending ? 'Verifying...' : 'Verify Instagram'}
+                </Button>
+              </div>
+              {oauthError ? (
+                <p className="text-xs text-danger" role="alert">
+                  {oauthError}
+                </p>
+              ) : null}
+            </form>
           </Card>
         )
       ) : (

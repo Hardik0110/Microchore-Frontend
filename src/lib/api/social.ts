@@ -8,6 +8,13 @@ export async function apiLinkYouTube(accessToken: string): Promise<{ linkedAccou
   })
 }
 
+export async function apiLinkInstagram(handle: string): Promise<{ linkedAccount: LinkedAccount }> {
+  return apiFetch<{ linkedAccount: LinkedAccount }>('/api/auth/social/instagram/', {
+    method: 'POST',
+    body: { handle },
+  })
+}
+
 export async function apiTwitterStartLink(): Promise<{ authorize_url: string }> {
   return apiFetch<{ authorize_url: string }>('/api/auth/social/twitter/start/', {
     method: 'POST',

@@ -32,7 +32,7 @@ export {
   type AdminUserListQuery,
 } from './admin'
 
-export { apiLinkYouTube, apiTwitterStartLink } from './social'
+export { apiLinkYouTube, apiLinkInstagram, apiTwitterStartLink } from './social'
 
 export { apiGetTasks, apiGetTask, apiClaimTask } from './tasks'
 

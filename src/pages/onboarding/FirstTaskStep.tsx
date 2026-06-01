@@ -194,7 +194,7 @@ export function FirstTaskStep() {
             type="url"
             value={commentUrl}
             onChange={(e) => setCommentUrl(e.target.value)}
-            placeholder="https://instagram.com/p/.../c/..."
+            placeholder="https://www.youtube.com/watch?v=...&lc=..."
             autoComplete="off"
           />
         </Field>
