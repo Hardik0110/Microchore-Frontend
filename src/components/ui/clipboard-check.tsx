@@ -1,16 +1,14 @@
 "use client";
 
 import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
+import { motion } from "motion/react";
 import type { HTMLAttributes } from "react";
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { forwardRef } from "react";
 
-import { cn } from "../../lib/ui-utils";
+import { cn, useAnimatedIcon } from "../../lib/ui-utils";
+import type { AnimatedIconHandle } from "../../lib/ui-utils";
 
-export interface ClipboardCheckIconHandle {
-  startAnimation: () => void;
-  stopAnimation: () => void;
-}
+export type ClipboardCheckIconHandle = AnimatedIconHandle;
 
 interface ClipboardCheckIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
@@ -27,31 +25,10 @@ const CHECK_VARIANTS: Variants = {
 
 const ClipboardCheckIcon = forwardRef<ClipboardCheckIconHandle, ClipboardCheckIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-    const controls = useAnimation();
-    const isControlledRef = useRef(false);
-
-    useImperativeHandle(ref, () => {
-      isControlledRef.current = true;
-      return {
-        startAnimation: () => controls.start("animate"),
-        stopAnimation: () => controls.start("normal"),
-      };
-    });
-
-    const handleMouseEnter = useCallback(
-      (e: React.MouseEvent<HTMLDivElement>) => {
-        if (isControlledRef.current) onMouseEnter?.(e);
-        else controls.start("animate");
-      },
-      [controls, onMouseEnter]
-    );
-
-    const handleMouseLeave = useCallback(
-      (e: React.MouseEvent<HTMLDivElement>) => {
-        if (isControlledRef.current) onMouseLeave?.(e);
-        else controls.start("normal");
-      },
-      [controls, onMouseLeave]
+    const { controls, handleMouseEnter, handleMouseLeave } = useAnimatedIcon(
+      ref,
+      onMouseEnter,
+      onMouseLeave
     );
 
     return (

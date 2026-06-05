@@ -1,4 +1,3 @@
-export { MarketingLayout } from './MarketingLayout'
 export { AuthLayout } from './AuthLayout'
 export { OnboardingLayout } from './OnboardingLayout'
 export { AppLayout } from './AppLayout'

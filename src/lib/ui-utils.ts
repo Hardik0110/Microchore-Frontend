@@ -4,8 +4,11 @@ import {
   useMemo,
   useRef,
   useState,
+  useImperativeHandle,
   type ClipboardEvent,
+  type Ref,
 } from 'react'
+import { useAnimation } from 'motion/react'
 
 export function cn(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ')
@@ -151,4 +154,54 @@ export function useLocalStorage<T>(key: string, initial: T) {
   )
 
   return [value, setAndPersist] as const
+}
+
+export interface AnimatedIconHandle {
+  startAnimation: () => void
+  stopAnimation: () => void
+}
+
+export function useAnimatedIcon(
+  ref: Ref<AnimatedIconHandle> | undefined,
+  onMouseEnter?: React.MouseEventHandler<HTMLDivElement>,
+  onMouseLeave?: React.MouseEventHandler<HTMLDivElement>
+) {
+  const controls = useAnimation()
+  const isControlledRef = useRef(false)
+
+  useImperativeHandle(ref, () => {
+    isControlledRef.current = true
+    return {
+      startAnimation: () => controls.start('animate'),
+      stopAnimation: () => controls.start('normal'),
+    }
+  })
+
+  const handleMouseEnter = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (isControlledRef.current) {
+        onMouseEnter?.(e)
+      } else {
+        controls.start('animate')
+      }
+    },
+    [controls, onMouseEnter]
+  )
+
+  const handleMouseLeave = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (isControlledRef.current) {
+        onMouseLeave?.(e)
+      } else {
+        controls.start('normal')
+      }
+    },
+    [controls, onMouseLeave]
+  )
+
+  return {
+    controls,
+    handleMouseEnter,
+    handleMouseLeave,
+  }
 }

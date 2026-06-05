@@ -57,8 +57,6 @@ export {
   type ReviewerEarning,
 } from './reviews'
 
-export { apiGetMyEarnings } from './earnings'
-
 export {
   apiGetNotifications,
   apiMarkNotificationRead,
