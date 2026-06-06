@@ -254,7 +254,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout eyebrow="Welcome back">
+    <AuthLayout eyebrow="Welcome back" showDot={false}>
       <h1 className="font-serif text-4xl md:text-4xl leading-[1.05] text-ink tracking-tighter">
         Sign in to <span className="signature">microchore</span>
       </h1>

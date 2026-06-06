@@ -3,7 +3,15 @@ import { Link } from 'react-router-dom'
 import { Logo } from '../ui/Logo'
 import { Eyebrow } from '../ui/primitives'
 
-export function AuthLayout({ children, eyebrow }: { children: ReactNode; eyebrow?: string }) {
+export function AuthLayout({
+  children,
+  eyebrow,
+  showDot = true,
+}: {
+  children: ReactNode
+  eyebrow?: string
+  showDot?: boolean
+}) {
   return (
     <main className="min-h-screen app-canvas text-ink flex flex-col">
       <header className="mx-auto w-full max-w-5xl px-6 py-5 flex items-center justify-between">
@@ -18,7 +26,7 @@ export function AuthLayout({ children, eyebrow }: { children: ReactNode; eyebrow
         <div className="w-full max-w-[420px]">
           {eyebrow ? (
             <div className="mb-3">
-              <Eyebrow dot>{eyebrow}</Eyebrow>
+              <Eyebrow dot={showDot}>{eyebrow}</Eyebrow>
             </div>
           ) : null}
           {children}
@@ -27,3 +35,4 @@ export function AuthLayout({ children, eyebrow }: { children: ReactNode; eyebrow
     </main>
   )
 }
+
