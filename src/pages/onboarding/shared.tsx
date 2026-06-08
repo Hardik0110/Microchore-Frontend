@@ -13,7 +13,7 @@ export function StepShell({ eyebrow, title, accents = [], intro, children }: Ste
   return (
     <section className="flex flex-col gap-6">
       <div>
-        <Eyebrow dot>{eyebrow}</Eyebrow>
+        <Eyebrow>{eyebrow}</Eyebrow>
         <HeadlineWithAccent
           as="h1"
           text={title}

@@ -6,7 +6,7 @@ import { Eyebrow } from '../ui/primitives'
 export function AuthLayout({
   children,
   eyebrow,
-  showDot = true,
+  showDot = false,
 }: {
   children: ReactNode
   eyebrow?: string
