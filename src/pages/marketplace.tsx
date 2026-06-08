@@ -73,7 +73,7 @@ export function MarketplacePage() {
 
       {!realTasksUnlocked ? (
         <Card>
-          <Eyebrow dot dotColor="info">Practice tasks pending</Eyebrow>
+          <Eyebrow>Practice tasks pending</Eyebrow>
           <p className="mt-2 text-sm text-ink-2 leading-relaxed">
             The marketplace opens as soon as your practice tasks are reviewed. Head back to the
             dashboard to see how many are left.
